@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Company Info</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #1abc9c;
+      --accent-color: #3498db;
+      --dark-color: #34495e;
+      --light-color: #ecf0f1;
+      --sidebar-width: 280px;
+    }
+    
+    body {
+      background-color: #f5f7fb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    /* Simple Card Background */
+    .background-card {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% - 40px);
+      max-width: 1200px;
+      height: calc(100% - 40px);
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      z-index: -1;
+    }
+    
+    /* Your Existing Card */
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      transition: all 0.4s ease;
+      width: 100%;
+      max-width: 800px;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--secondary-color), var(--accent-color));
+    }
+    
+    /* Rest of your existing styles remain exactly the same */
+    .form-control {
+      border-radius: 8px;
+      padding: 12px 15px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-control:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+      background-color: white;
+    }
+    
+    .btn-primary {
+      background-color: var(--secondary-color);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #16a085;
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(26, 188, 156, 0.3);
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: var(--dark-color);
+      margin-bottom: 8px;
+    }
+    
+    .header {
+      color: var(--primary-color);
+      font-weight: 700;
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+    
+    .header:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+      border-radius: 2px;
+    }
+    
+    .input-icon {
+      position: relative;
+    }
+    
+    .input-icon i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-color);
+    }
+    
+    .input-icon .form-control {
+      padding-left: 45px;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+  </style>
+</head>
+<body>
+  <!-- Simple Card Background -->
+  <div class="background-card"></div>
+  
+  <!-- Your Existing Content -->
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card p-4 animate__animated animate__fadeIn">
+          <h1 class="header animate-fade-in">
+            <i class="fas fa-building me-3"></i>Edit Company Information
+          </h1>
+          
+          <%= form_with model: @company, local: true, html: { class: "needs-validation", novalidate: true } do |form| %>
+            <div class="mb-4 animate-fade-in delay-1">
+              <%= form.label :name, class: "form-label" %>
+              <div class="input-icon">
+                <i class="fas fa-signature"></i>
+                <%= form.text_field :name, class: "form-control", placeholder: "Enter company name", required: true %>
+              </div>
+              <div class="invalid-feedback">
+                Please provide a company name.
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-4 animate-fade-in delay-2">
+                <%= form.label :email, class: "form-label" %>
+                <div class="input-icon">
+                  <i class="fas fa-envelope"></i>
+                  <%= form.text_field :email, class: "form-control", placeholder: "company@example.com", type: "email" %>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-4 animate-fade-in delay-2">
+                <%= form.label :phone, class: "form-label" %>
+                <div class="input-icon">
+                  <i class="fas fa-phone"></i>
+                  <%= form.text_field :phone, class: "form-control", placeholder: "+1 (123) 456-7890" %>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4 animate-fade-in delay-3">
+              <%= form.label :website, class: "form-label" %>
+              <div class="input-icon">
+                <i class="fas fa-globe"></i>
+                <%= form.text_field :website, class: "form-control", placeholder: "https://www.example.com" %>
+              </div>
+            </div>
+
+            <div class="mb-4 animate-fade-in delay-4">
+              <%= form.label :industry, class: "form-label" %>
+              <div class="input-icon">
+                <i class="fas fa-industry"></i>
+                <%= form.text_field :industry, class: "form-control", placeholder: "e.g. Technology, Healthcare, Finance" %>
+              </div>
+            </div>
+
+            <div class="mb-4 animate-fade-in delay-5">
+              <%= form.label :address, class: "form-label" %>
+              <div class="input-icon">
+                <i class="fas fa-map-marker-alt"></i>
+                <%= form.text_area :address, class: "form-control", rows: 3, placeholder: "Enter full company address" %>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-5 animate-fade-in delay-5">
+              <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                <i class="fas fa-arrow-left me-2"></i>Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Update Company
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Form validation
+    (function () {
+      'use strict'
+      
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.querySelectorAll('.needs-validation')
+      
+      // Loop over them and prevent submission
+      Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+            
+            form.classList.add('was-validated')
+          }, false)
+        })
+    })()
+    
+    // Add animation to form elements on focus
+    document.querySelectorAll('.form-control').forEach(element => {
+      element.addEventListener('focus', function() {
+        this.parentElement.classList.add('animate__animated', 'animate__pulse');
+      });
+      
+      element.addEventListener('blur', function() {
+        this.parentElement.classList.remove('animate__animated', 'animate__pulse');
+      });
+    });
+  </script>
+</body>
+</html>

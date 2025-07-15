@@ -1,0 +1,20 @@
+<h2><%= @contact.company.name %></h2>
+<p>Email: <%= @contact.company.email %></p>
+<p>Phone: <%= @contact.company.phone %></p>
+
+<hr>
+<h4>Contacts</h4>
+
+<% if @contact.company.contacts.any? %>
+  <ul>
+    <% @contact.company.contacts.each do |contact| %>
+      <li>
+        <strong><%= contact.name %></strong> - <%= contact.title %><br>
+        Email: <%= contact.email %> | Phone: <%= contact.phone %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No contacts added yet.</p>
+<% end %>
+

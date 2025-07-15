@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreCRM Professional Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --accent-color: #f6c23e;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+        
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fc;
+            overflow-x: hidden;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
+            min-height: 100vh;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .main-content {
+            margin-left: 14rem;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+        
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--secondary-color) !important;
+        }
+        
+        .bg-warning {
+            background-color: var(--accent-color) !important;
+        }
+        
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        .text-success {
+            color: var(--secondary-color) !important;
+        }
+        
+        .text-warning {
+            color: var(--accent-color) !important;
+        }
+        
+        .progress {
+            height: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
+        .task-item {
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .task-item:hover {
+            border-left: 3px solid var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .meeting-card {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+        
+        .meeting-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .ticket-item {
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .ticket-item:hover {
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .badge-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            border-radius: 50%;
+            background-color: #e74a3b;
+            color: white;
+            font-size: 0.6rem;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .invoice-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar (rendered from your layout) -->
+    <%= render "layouts/sidebar" %>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Heading -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 text-gray-800 animate__animated animate__fadeIn">CoreCRM Dashboard</h1>
+            <div class="d-flex">
+                <div class="dropdown me-2">
+                    <button class="btn btn-primary dropdown-toggle animate__animated animate__fadeIn animate__delay-1s" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-calendar-alt me-2"></i>Today
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="timeRangeDropdown">
+                        <li><a class="dropdown-item" href="#">Today</a></li>
+                        <li><a class="dropdown-item" href="#">This Week</a></li>
+                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                    </ul>
+                </div>
+                <button class="btn btn-success animate__animated animate__fadeIn animate__delay-2s">
+                    <i class="fas fa-plus me-2"></i>New Task
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tasks Section -->
+        <div class="row animate__animated animate__fadeIn">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">My Tasks</h6>
+                        <span class="badge bg-primary rounded-pill">8</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="nav nav-tabs" id="tasksTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today" type="button" role="tab">Today</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tomorrow-tab" data-bs-toggle="tab" data-bs-target="#tomorrow" type="button" role="tab">Tomorrow</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content p-3" id="tasksTabContent">
+                            <div class="tab-pane fade show active" id="today" role="tabpanel">
+                                <div class="d-flex align-items-center mb-3 task-item p-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="task1">
+                                    </div>
+                                    <div class="ms-2">
+                                        <label class="form-check-label" for="task1">Client onboarding</label>
+                                        <small class="d-block text-muted">9:00 AM</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-3 task-item p-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="task2">
+                                    </div>
+                                    <div class="ms-2">
+                                        <label class="form-check-label" for="task2">Team meeting</label>
+                                        <small class="d-block text-muted">11:30 AM</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-3 task-item p-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="task3">
+                                    </div>
+                                    <div class="ms-2">
+                                        <label class="form-check-label" for="task3">Project review</label>
+                                        <small class="d-block text-muted">2:00 PM</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tomorrow" role="tabpanel">
+                                <div class="d-flex align-items-center mb-3 task-item p-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="task4">
+                                    </div>
+                                    <div class="ms-2">
+                                        <label class="form-check-label" for="task4">Client demo</label>
+                                        <small class="d-block text-muted">10:00 AM</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-3 task-item p-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="task5">
+                                    </div>
+                                    <div class="ms-2">
+                                        <label class="form-check-label" for="task5">Sprint planning</label>
+                                        <small class="d-block text-muted">1:00 PM</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ongoing Tasks -->
+            <div class="col-md-9">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">Ongoing Tasks</h6>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary">View All</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h5 class="mb-0">BrightBridge - Website Design</h5>
+                                <span class="badge bg-primary">High Priority</span>
+                            </div>
+                            <p class="text-muted">Design a farmer website with modern templates</p>
+                            
+                            <div class="task-item p-3 mb-2 rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox" id="task6">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label class="form-check-label fw-bold" for="task6">Github - Upload Dev Files & Images</label>
+                                        <p class="mb-0 text-muted">Collaborate with Developers to handle the SaaS Project</p>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link text-dark" type="button" id="taskMenu1" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="taskMenu1">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i>Flag</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item p-3 mb-2 rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox" id="task7">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label class="form-check-label fw-bold" for="task7">BTDesign - Mobile App Prototype</label>
+                                        <p class="mb-0 text-muted">Ready prototype for testing user in this week</p>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link text-dark" type="button" id="taskMenu2" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="taskMenu2">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i>Flag</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item p-3 rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox" id="task8">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label class="form-check-label fw-bold" for="task8">Horizon - Dashboard Design</label>
+                                        <p class="mb-0 text-muted">Design a dashboard comfortable with Vision Pro</p>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-link text-dark" type="button" id="taskMenu3" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="taskMenu3">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i>Flag</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">65% Completed</small>
+                            <small>3 of 5 tasks</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Second Row -->
+        <div class="row mt-4 animate__animated animate__fadeIn animate__delay-1s">
+            <!-- Projects Overview -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold">Projects Overview</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <h3 class="text-primary mb-0">14</h3>
+                                    <small class="text-muted">In Progress</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <h3 class="text-success mb-0">32</h3>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <h3 class="text-warning mb-0">54</h3>
+                                    <small class="text-muted">Not Started</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container mt-3">
+                            <canvas id="projectsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Income vs Expense -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold">Income vs Expense</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-4">
+                            <div class="text-center">
+                                <h5 class="text-success mb-1">$24,000</h5>
+                                <small class="text-muted">Income</small>
+                            </div>
+                            <div class="text-center">
+                                <h5 class="text-danger mb-1">$12,200</h5>
+                                <small class="text-muted">Expense</small>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="incomeExpenseChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- My Meetings -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">My Meetings</h6>
+                        <button class="btn btn-sm btn-outline-primary">See All</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-3 meeting-card mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary text-white rounded-circle p-2 me-3">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">App Project</h6>
+                                    <small class="text-muted">6:45 PM | Meet</small>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-dark" type="button" id="meetingMenu1" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="meetingMenu1">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-video me-2"></i>Join Now</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 meeting-card">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle p-2 me-3">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">User Research</h6>
+                                    <small class="text-muted">6:45 PM | Zoom</small>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-dark" type="button" id="meetingMenu2" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="meetingMenu2">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-video me-2"></i>Join Now</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Third Row -->
+        <div class="row mt-4 animate__animated animate__fadeIn animate__delay-2s">
+            <!-- Open Tickets -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">Open Tickets</h6>
+                        <div class="position-relative">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-plus"></i> New Ticket
+                            </button>
+                            <span class="badge-notification">3</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="p-3 ticket-item">
+                            <div class="d-flex align-items-start">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="avatar me-3" alt="Jacob Martinez">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Jacob Martinez</h6>
+                                    <p class="mb-2">I need 3 more new features on the mobile app design.</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-warning text-dark me-2">Design</span>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 ticket-item border-top">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary text-white rounded-circle p-2 me-3">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Live Bell Notification</h6>
+                                    <p class="mb-2">I need 3 more new features on the mobile app design.</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-success me-2">Feature</span>
+                                        <small class="text-muted">5 hours ago</small>
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 ticket-item border-top">
+                            <div class="d-flex align-items-start">
+                                <img src="https://randomuser.me/api/portraits/men/44.jpg" class="avatar me-3" alt="Connor Mitchell">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Connor Mitchell</h6>
+                                    <p class="mb-2">I need 3 more new features on the mobile app design.</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-danger me-2">Urgent</span>
+                                        <small class="text-muted">Yesterday</small>
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Invoice Overview -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold">Invoice Overview</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Count</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span class="invoice-status bg-danger"></span>
+                                            Overdue
+                                        </td>
+                                        <td>5</td>
+                                        <td>$183.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="invoice-status bg-warning"></span>
+                                            Not Paid
+                                        </td>
+                                        <td>5</td>
+                                        <td>$183.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="invoice-status bg-info"></span>
+                                            Partially Paid
+                                        </td>
+                                        <td>5</td>
+                                        <td>$183.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="invoice-status bg-success"></span>
+                                            Fully Paid
+                                        </td>
+                                        <td>5</td>
+                                        <td>$183.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="invoice-status bg-secondary"></span>
+                                            Draft
+                                        </td>
+                                        <td>5</td>
+                                        <td>$183.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script>
+        // Projects Chart
+        const projectsCtx = document.getElementById('projectsChart').getContext('2d');
+        const projectsChart = new Chart(projectsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['In Progress', 'Completed', 'Not Started'],
+                datasets: [{
+                    data: [14, 32, 54],
+                    backgroundColor: [
+                        'rgba(78, 115, 223, 0.8)',
+                        'rgba(28, 200, 138, 0.8)',
+                        'rgba(246, 194, 62, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(78, 115, 223, 1)',
+                        'rgba(28, 200, 138, 1)',
+                        'rgba(246, 194, 62, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 10,
+                            padding: 20
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Income vs Expense Chart
+        const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+        const incomeExpenseChart = new Chart(incomeExpenseCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: [12000, 19000, 15000, 18000, 21000, 22000, 24000],
+                        backgroundColor: 'rgba(28, 200, 138, 0.8)',
+                        borderColor: 'rgba(28, 200, 138, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Expense',
+                        data: [8000, 10000, 12000, 9000, 11000, 10500, 12200],
+                        backgroundColor: 'rgba(231, 74, 59, 0.8)',
+                        borderColor: 'rgba(231, 74, 59, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end'
+                    }
+                }
+            }
+        });
+        
+        // Animate numbers on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            animateValue('projectsInProgress', 0, 14, 1000);
+            animateValue('projectsCompleted', 0, 32, 1000);
+            animateValue('projectsNotStarted', 0, 54, 1000);
+            
+            // Add pulse animation to notification bell
+            const notificationBell = document.querySelector('.fa-bell');
+            if (notificationBell) {
+                notificationBell.classList.add('pulse');
+            }
+        });
+        
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>

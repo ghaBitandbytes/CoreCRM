@@ -1,0 +1,137 @@
+<div class="relative h-screen overflow-hidden bg-gradient-to-br from-[#f5f7fb] to-[#ecf0f1] py-12 px-4 sm:px-6 lg:px-8" style="background-image: url('https://www.transparenttextures.com/patterns/clean-gray-paper.png');">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute left-20 top-20 h-64 w-64 rounded-full bg-[#1abc9c] opacity-10 mix-blend-multiply filter blur-3xl"></div>
+    <div class="absolute right-32 bottom-20 h-64 w-64 rounded-full bg-[#3498db] opacity-10 mix-blend-multiply filter blur-3xl"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto">
+    <!-- Page header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-extrabold text-[#2c3e50] sm:text-5xl">Company Registration</h1>
+      <p class="mt-4 text-xl text-[#34495e] max-w-3xl mx-auto">
+        Complete the form below to register your new company in our system
+      </p>
+      <div class="mt-6 flex justify-center">
+        <div class="h-1 w-20 bg-[#1abc9c] rounded-full"></div>
+      </div>
+    </div>
+
+    <!-- Form card -->
+    <div class="relative bg-white rounded-xl shadow-xl overflow-hidden max-w-4xl mx-auto">
+      <!-- Card header accent -->
+      <div class="bg-gradient-to-r from-[#2c3e50] to-[#34495e] h-2 w-full"></div>
+      
+      <div class="px-6 py-8 sm:p-10">
+        <!-- Form header -->
+        <div class="flex items-center mb-8">
+          <div class="flex items-center justify-center bg-[#1abc9c] bg-opacity-10 text-[#1abc9c] rounded-full h-12 w-12">
+            <i class="fas fa-building text-xl"></i>
+          </div>
+          <div class="ml-4">
+            <h2 class="text-2xl font-bold text-[#2c3e50]">Company Information</h2>
+            <p class="text-[#7f8c8d]">Please provide your company details</p>
+          </div>
+        </div>
+
+<%= form_with model: @company, url: companies_path(lead_id: params[:lead_id]), local: true do |f| %>
+          <% if @company.errors.any? %>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 animate-pulse">
+              <div class="flex">
+                <div class="flex-shrink-0 text-red-500">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    <%= pluralize(@company.errors.count, "error") %> prevented this company from being saved:
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                      <% @company.errors.full_messages.each do |msg| %>
+                        <li><%= msg %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div>
+              <%= f.label :name, "Company Name", class: "block text-sm font-medium text-[#34495e]" %>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <%= f.text_field :name, required: true, class: "focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border-gray-300 rounded-md py-3 px-4 border", placeholder: "Enter company name" %>
+              </div>
+            </div>
+
+            <div>
+              <%= f.label :industry, class: "block text-sm font-medium text-[#34495e]" %>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <%= f.text_field :industry, class: "focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border-gray-300 rounded-md py-3 px-4 border", placeholder: "Industry sector" %>
+              </div>
+            </div>
+
+            <div>
+              <%= f.label :email, class: "block text-sm font-medium text-[#34495e]" %>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <%= f.email_field :email, class: "focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border-gray-300 rounded-md py-3 px-4 border", placeholder: "contact@company.com" %>
+              </div>
+            </div>
+
+            <div>
+              <%= f.label :phone, class: "block text-sm font-medium text-[#34495e]" %>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <%= f.telephone_field :phone, class: "focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border-gray-300 rounded-md py-3 px-4 border", placeholder: "+1 (555) 123-4567" %>
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <%= f.label :website, class: "block text-sm font-medium text-[#34495e]" %>
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <%= f.text_field :website, class: "focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border-gray-300 rounded-md py-3 px-4 border", placeholder: "https://www.example.com" %>
+              </div>
+            </div>
+
+            <% if false %>
+              <div class="sm:col-span-2">
+                <%= f.label :website, class: "block text-sm font-medium text-[#34495e]" %>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                  <%= f.url_field :website, class: "focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border-gray-300 rounded-md py-3 px-4 border", placeholder: "https://www.example.com" %>
+                </div>
+              </div>
+            <% end %>
+
+            <div class="sm:col-span-2">
+              <%= f.label :address, class: "block text-sm font-medium text-[#34495e]" %>
+              <div class="mt-1">
+                <%= f.text_area :address, rows: 3, class: "shadow-sm focus:ring-[#3498db] focus:border-[#3498db] block w-full sm:text-sm border border-gray-300 rounded-md py-3 px-4", placeholder: "Enter full company address" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-6 border-t border-gray-200">
+            <%= link_to companies_path, class: "inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-[#34495e] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3498db]" do %>
+              <i class="fas fa-arrow-left mr-2"></i> Cancel
+            <% end %>
+            <%= f.submit "Create Company", class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-[#1abc9c] to-[#3498db] hover:from-[#16a085] hover:to-[#2980b9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3498db]" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+<!-- Animation (optional) -->
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+</style>

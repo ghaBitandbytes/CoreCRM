@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up | CoreCRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #1abc9c;
+      --accent-color: #3498db;
+      --dark-color: #34495e;
+      --light-color: #ecf0f1;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      overflow: hidden; /* Disable scrolling */
+      height: 100vh;
+      margin: 0;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: white;
+    }
+    
+    .nav-link {
+      font-weight: 500;
+      position: relative;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: white;
+    }
+    
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--light-color);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover:after {
+      width: 100%;
+    }
+    
+    .signup-container {
+      display: flex;
+      height: 100vh;
+    }
+    
+    .illustration-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      color: white;
+    }
+    
+    .form-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-color: white;
+      overflow-y: auto; /* Only form side scrollable */
+    }
+    
+    .form-wrapper {
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .form-control, .form-select {
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.25rem rgba(26, 188, 156, 0.25);
+    }
+    
+    .btn-primary {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: #16a085;
+      border-color: #16a085;
+    }
+    
+    .btn-outline-primary {
+      color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 992px) {
+      .signup-container {
+        flex-direction: column;
+      }
+      
+      .illustration-side {
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      .form-side {
+        padding: 2rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <!-- Illustration Side -->
+    <div class="illustration-side gradient-bg" data-aos="fade-right">
+      <div class="text-center">
+<h1 class="display-4 fw-bold mb-4 ms-3">Join CoreCRM</h1>
+        <p class="lead mb-5">The simple way to manage your customers</p>
+        
+        <div class="row text-start">
+          <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h4>Powerful Analytics</h4>
+            <p>Track your sales pipeline with real-time insights</p>
+          </div>
+          
+          <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h4>Customer Management</h4>
+            <p>Organize all your customer data in one place</p>
+          </div>
+          
+          <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <h4>Task Automation</h4>
+            <p>Automate follow-ups and reminders</p>
+          </div>
+          
+          <div class="col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="feature-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h4>Mobile Friendly</h4>
+            <p>Access your CRM from anywhere</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Form Side -->
+    <div class="form-side" data-aos="fade-left">
+      <div class="form-wrapper">
+        <div class="text-center mb-5">
+          <h2 class="h3 mb-3">Create Your Account</h2>
+        </div>
+        
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'needs-validation' }) do |f| %>
+          <%= render "devise/shared/error_messages", resource: resource %>
+          
+           <div class="mb-3">
+  <%= f.label :username, class: "form-label" %>
+  <div class="input-group">
+    <span class="input-group-text"><i class="fas fa-user"></i></span>
+    <%= f.text_field :username, class: "form-control", placeholder: "your_username", required: true %>
+  </div>
+</div>
+
+
+          <div class="mb-3">
+            <%= f.label :email, class: "form-label" %>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: "your@email.com", required: true %>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <%= f.label :password, class: "form-label" %>
+            <% if @minimum_password_length %>
+              <small class="text-muted float-end">(<%= @minimum_password_length %> characters minimum)</small>
+            <% end %>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              <%= f.password_field :password, autocomplete: "new-password", class: "form-control", placeholder: "••••••••", required: true %>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <%= f.label :password_confirmation, class: "form-label" %>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", placeholder: "••••••••", required: true %>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <%= f.label :role, "Account Type", class: "form-label" %>
+           <%= f.select :role, [['Admin', 'admin'], ['Sales Manager', 'salesmanager'], ['Sales', 'sales'], ['Viewer', 'viewer']], { prompt: 'Select your role' }, class: "form-select", required: true %>
+          </div>
+          
+        
+          <div class="d-grid mb-4">
+            <%= f.submit "Sign up", class: "w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-semibold text-white bg-[#1abc9c] hover:bg-[#16a085] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1abc9c] transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]" %> 
+          </div>
+        <% end %>
+        
+        <div class="text-center">
+          <p class="text-muted">Already have an account? 
+            <%= link_to "Sign in", new_session_path(resource_name), class: "text-black fw-bold" %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true
+    });
+    
+    // Disable body scrolling (only form side will be scrollable)
+    document.body.style.overflow = 'hidden';
+  </script>
+</body>
+</html>

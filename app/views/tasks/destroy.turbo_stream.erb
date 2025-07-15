@@ -1,0 +1,6 @@
+<%= turbo_stream.remove @task %>
+
+<%# Optional: Show flash message %>
+<%= turbo_stream.append "flash" do %>
+  <div class="flash-notice">Task was successfully deleted.</div>
+<% end %>

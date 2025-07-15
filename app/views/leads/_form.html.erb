@@ -1,0 +1,291 @@
+<div class="lead-form-wrapper" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+  <div class="lead-form-overlay"></div>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-lg overflow-hidden animate__animated animate__fadeIn">
+          <!-- Card Header with Gradient Background -->
+          <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0">
+                <%= lead.persisted? ? 'Edit Lead' : 'Create New Lead' %>
+              </h4>
+              <span class="badge bg-white text-primary rounded-pill">
+                <%= lead.persisted? ? "Lead ##{lead.id}" : "New Lead" %>
+              </span>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-4 bg-white">
+            <%= form_with(model: lead, local: true, html: { class: 'needs-validation form-enter', novalidate: true }) do |f| %>
+              <!-- Error Messages -->
+              <% if lead.errors.any? %>
+                <div class="alert alert-danger alert-dismissible fade show mb-4 animate__animated animate__shakeX" role="alert">
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <h5 class="alert-heading mb-2"><%= pluralize(lead.errors.count, "error") %> prohibited this lead from being saved:</h5>
+                      <ul class="mb-0 ps-3">
+                        <% lead.errors.full_messages.each do |msg| %>
+                          <li><%= msg %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              <% end %>
+
+              <!-- Form Fields -->
+              <div class="row g-4">
+                <!-- Name Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.text_field :name, class: "form-control floating-input", id: "floatingName", placeholder: " ", required: true %>
+                    <label for="floatingName" class="text-muted">Full Name</label>
+                    <div class="invalid-feedback">
+                      Please provide the lead's name.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Email Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.email_field :email, class: "form-control floating-input", id: "floatingEmail", placeholder: " ", required: true %>
+                    <label for="floatingEmail" class="text-muted">Email Address</label>
+                    <div class="invalid-feedback">Please provide a valid email address.</div>
+                  </div>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.telephone_field :phone, class: "form-control floating-input", id: "floatingPhone", placeholder: " " %>
+                    <label for="floatingPhone" class="text-muted">Phone Number</label>
+                  </div>
+                </div>
+
+                <!-- Company Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.text_field :company, class: "form-control floating-input", id: "floatingCompany", placeholder: " " %>
+                    <label for="floatingCompany" class="text-muted">Company</label>
+                  </div>
+                </div>
+
+                <!-- Lead Source Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.select :source, ['Website', 'Referral', 'Event', 'LinkedIn', 'Other'], { prompt: 'Select Source' }, class: "form-select floating-select", id: "floatingSource" %>
+                    <label for="floatingSource" class="text-muted">Lead Source</label>
+                  </div>
+                </div>
+
+                <!-- Status Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+<% status_options = ['New', 'Contacted', 'Converted', 'Lost'] %>
+<% status_options << 'Qualified' if current_user.role == 'salesmanager' %>
+
+<%= f.select :status, status_options, { prompt: 'Select Status' }, class: "form-select floating-select", id: "floatingStatus" %>
+                    <label for="floatingStatus" class="text-muted">Status</label>
+                  </div>
+                </div>
+
+                <!-- Tags Field -->
+                <div class="col-12">
+                  <div class="form-floating">
+                    <%= f.text_field :tags, class: "form-control floating-input", id: "floatingTags", placeholder: " " %>
+                    <label for="floatingTags" class="text-muted">Tags</label>
+                    <small class="form-text text-muted mt-1">
+                      Separate tags with commas (e.g., Urgent, VIP, Follow-up)
+                    </small>
+                  </div>
+                </div>
+
+                <!-- Notes Field -->
+                <div class="col-12">
+                  <div class="form-floating">
+                    <%= f.text_area :notes, rows: 3, class: "form-control floating-textarea", id: "floatingNotes", placeholder: " " %>
+                    <label for="floatingNotes" class="text-muted">Notes</label>
+                    <small class="form-text text-muted mt-1">
+                      Optional — for sales member's internal use
+                    </small>
+                  </div>
+                </div>
+
+                <!Assigned To Field -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <%= f.select :assigned_to, ['Sales Member 1', 'Sales Member 2', 'Sales Member 3'], { prompt: "Assign to..." }, class: "form-select floating-select", id: "floatingAssigned" %>
+                    <label for="floatingAssigned" class="text-muted">Assigned To</label>
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="col-12 mt-4 pt-3 border-top">
+                  <div class="d-flex justify-content-end gap-3">
+                    <%= link_to leads_path, class: "btn btn-lg btn-outline-secondary rounded-pill px-4 d-inline-flex align-items-center" do %>
+  <i class="fa-solid fa-arrow-left me-2"></i> Back
+<% end %>
+
+
+                    <% if lead.persisted? %>
+                      <%= button_tag(type: "submit", class: "btn btn-lg rounded-pill px-4 shadow-sm", style: "background-color: var(--secondary-color); border-color: var(--secondary-color); color: white;", data: { disable_with: "Updating..." }) do %>
+                        Update Lead
+                      <% end %>
+                    <% else %>
+                      <%= button_tag(type: "submit", class: "btn btn-lg rounded-pill px-4 shadow-sm", style: "background-color: var(--secondary-color); border-color: var(--secondary-color); color: white;", data: { disable_with: "Creating..." }) do %>
+                        Create Lead
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  :root {
+    --primary-color: #2c3e50;
+    --secondary-color: #1abc9c;
+    --accent-color: #3498db;
+    --dark-color: #34495e;
+    --light-color: #ecf0f1;
+  }
+
+  /* Background styling */
+  .lead-form-wrapper {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+  }
+  
+  .lead-form-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 62, 80, 0.85);
+    z-index: 0;
+  }
+  
+  .lead-form-wrapper > .container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Card styling */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+  }
+  
+  /* Form element styling */
+  .floating-input, .floating-select, .floating-textarea {
+    border-left: 3px solid var(--accent-color);
+    transition: all 0.3s;
+    background-color: var(--light-color);
+  }
+  
+  .floating-input:focus, .floating-select:focus, .floating-textarea:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.25rem rgba(26, 188, 156, 0.25);
+    background-color: white;
+  }
+  
+  .form-floating label {
+    color: var(--dark-color);
+  }
+  
+  /* Button styling */
+  .btn-accent {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    transition: all 0.3s;
+  }
+  
+  .btn-accent:hover {
+    background-color: #16a085;
+    border-color: #16a085;
+    transform: translateY(-2px);
+    color: white;
+  }
+  
+  .btn-outline-secondary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  /* Animations */
+  .form-enter .form-floating {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: formEnter 0.5s forwards;
+  }
+
+  @keyframes formEnter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Sequential animation delay for form fields */
+  .form-enter .form-floating:nth-child(1) { animation-delay: 0.1s; }
+  .form-enter .form-floating:nth-child(2) { animation-delay: 0.2s; }
+  .form-enter .form-floating:nth-child(3) { animation-delay: 0.3s; }
+  .form-enter .form-floating:nth-child(4) { animation-delay: 0.4s; }
+  .form-enter .form-floating:nth-child(5) { animation-delay: 0.5s; }
+  .form-enter .form-floating:nth-child(6) { animation-delay: 0.6s; }
+  .form-enter .form-floating:nth-child(7) { animation-delay: 0.7s; }
+  .form-enter .form-floating:nth-child(8) { animation-delay: 0.8s; }
+  .form-enter .form-floating:nth-child(9) { animation-delay: 0.9s; }
+  
+  /* Badge styling */
+  .badge.bg-white {
+    background-color: white !important;
+    color: var(--primary-color) !important;
+  }
+</style>
+
+<!-- Include required libraries -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Form validation
+  (function() {
+    'use strict'
+    
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
+    
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>

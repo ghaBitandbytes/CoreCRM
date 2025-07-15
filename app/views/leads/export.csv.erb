@@ -1,0 +1,6 @@
+<%= CSV.generate do |csv| %>
+  <% csv << ["ID", "Name", "Email", "Status"] %>
+  <% @leads.each do |lead| %>
+    <% csv << [lead.id, lead.name, lead.email, lead.status] %>
+  <% end %>
+<% end %>

@@ -1,0 +1,5 @@
+<turbo-stream action="append" target="leads_list">
+  <template>
+    <%= render partial: "leads/lead", formats: [:html], locals: { lead: @lead } %>
+  </template>
+</turbo-stream>

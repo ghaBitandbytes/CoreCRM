@@ -1,0 +1,45 @@
+<%= form_with(model: [@company, @deal], local: true) do |f| %>
+  <% if @deal.errors.any? %>
+    <div class="alert alert-danger">
+      <ul>
+        <% @deal.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :title %>
+    <%= f.text_field :title, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :value %>
+    <%= f.number_field :value, step: 100, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :probability %>
+    <%= f.number_field :probability, step: 1, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :close_date %>
+    <%= f.date_field :close_date, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :stage_id, "Stage" %>
+    <%= f.collection_select :stage_id, Stage.order(:position), :id, :name, include_blank: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :contact_id %>
+    <%= f.collection_select :contact_id, @company.contacts, :id, :name, include_blank: true %>
+  </div>
+
+  <div class="mt-4">
+    <%= f.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

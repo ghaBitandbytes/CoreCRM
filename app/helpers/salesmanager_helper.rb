@@ -1,0 +1,2 @@
+module SalesmanagerHelper
+end

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Reset</title>
+  <!-- Add these to your head -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Reset and Base Styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Animated Background */
+    .background-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+    
+    .background-animation {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.7;
+    }
+    
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      top: 20%;
+      left: 10%;
+      background: rgba(26, 188, 156, 0.15);
+      animation: float 18s infinite linear;
+    }
+    
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      bottom: 15%;
+      right: 10%;
+      background: rgba(44, 62, 80, 0.15);
+      animation: float 20s infinite linear reverse;
+    }
+    
+    .shape-3 {
+      width: 250px;
+      height: 250px;
+      top: 50%;
+      right: 25%;
+      background: rgba(22, 160, 133, 0.15);
+      animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(50px, 50px) rotate(180deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    /* Form Container */
+    .form-container {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    /* Card Styling */
+    .auth-card {
+      width: 100%;
+      max-width: 900px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .auth-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .visual-side {
+      background: linear-gradient(135deg, #2c3e50 0%, #1abc9c 100%);
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    
+    .form-side {
+      padding: 3rem;
+    }
+    
+    /* Form Elements */
+    .form-title {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    
+    .form-description {
+      color: #6c757d;
+      margin-bottom: 2rem;
+    }
+    
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-control {
+      height: 48px;
+      border-left: 0;
+    }
+    
+    .input-group-text {
+      background-color: white;
+      border-right: 0;
+    }
+    
+    .btn-primary {
+      background-color: #1abc9c;
+      border-color: #1abc9c;
+      padding: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #16a085;
+      border-color: #16a085;
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .visual-side {
+        display: none;
+      }
+      .form-side {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Animation -->
+  <div class="background-wrapper">
+    <div class="background-animation">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
+  
+  <!-- Form Container -->
+  <div class="form-container">
+    <div class="auth-card card">
+      <div class="row g-0">
+        <!-- Visual Side -->
+        <div class="col-lg-5 d-none d-lg-flex visual-side">
+          <div class="text-center">
+            <div class="mb-4">
+              <i class="fas fa-lock fa-4x" style="opacity: 0.9;"></i>
+            </div>
+            <h3 class="h4 fw-semibold mb-3">Password Recovery</h3>
+            <p class="small">Secure access to your account</p>
+            <div class="mt-4" style="height: 4px; background: rgba(255,255,255,0.2); width: 80%; margin: 0 auto; border-radius: 2px;">
+              <div class="strength-indicator" style="height: 100%; width: 0%; background: white; border-radius: 2px; transition: width 2s ease-in-out;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Form Side -->
+        <div class="col-lg-7 form-side">
+          <div data-aos="fade-up">
+            <h2 class="h4 fw-semibold form-title">Forgot Password?</h2>
+            <p class="text-muted form-description">Enter your email to receive reset instructions</p>
+            
+            <!-- Your Form Here -->
+            <form>
+              <div class="mb-4">
+                <label for="email" class="form-label small text-uppercase text-muted fw-semibold mb-2">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-envelope text-muted"></i></span>
+                  <input type="email" class="form-control" id="email" placeholder="your@email.com" required style="height: 46px;">
+                </div>
+                <small class="form-text text-muted mt-1">Enter your registered email address</small>
+              </div>
+
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary fw-semibold">
+                  Send Reset Link
+                </button>
+              </div>
+            </form>
+
+            <div class="text-center small mt-4 pt-3 border-top">
+              <p class="text-muted mb-3">Remember your credentials?</p>
+              <div class="d-flex justify-content-center gap-2">
+               <a href="<%= new_user_session_path %>" class="btn btn-sm btn-outline-secondary px-3">Sign In</a>
+<a href="<%= new_user_registration_path %>" class="btn btn-sm btn-link text-primary px-3 fw-semibold">Register</a>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize animations
+    AOS.init({
+      duration: 600,
+      easing: 'ease-out-quad',
+      once: true
+    });
+    
+    // Animate strength indicator
+    document.addEventListener('DOMContentLoaded', function() {
+      const indicator = document.querySelector('.strength-indicator');
+      if (indicator) {
+        setInterval(() => {
+          indicator.style.width = '0%';
+          setTimeout(() => {
+            indicator.style.width = '100%';
+          }, 50);
+        }, 4000);
+      }
+    });
+  </script>
+</body>
+</html>

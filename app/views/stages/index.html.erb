@@ -1,0 +1,22 @@
+<h2 class="text-xl font-bold mb-4">Pipeline Stages</h2>
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-xl font-bold">Customize Your Pipeline Stages</h2>
+  <%= link_to "➕ Add New Stage", new_stage_path, class: "text-blue-600 underline" %>
+</div>
+
+<table class="table-auto w-full">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @stages.each do |stage| %>
+      <tr>
+        <td><%= stage.name %></td>
+        <td><%= link_to "Edit", edit_stage_path(stage), class: "text-blue-600 underline" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

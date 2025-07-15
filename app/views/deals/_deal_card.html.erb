@@ -1,0 +1,20 @@
+<%= link_to deal_path(deal), class: "block deal-card bg-white p-3 rounded shadow border border-gray-200 hover:bg-gray-50 transition", data: { deal_id: deal.id } do %>
+  <div class="flex justify-between items-center mb-1">
+    <strong class="text-gray-800"><%= deal.title %></strong>
+    <span class="text-sm text-gray-600 font-medium">
+      <%= number_to_currency(deal.value) %>
+    </span>
+  </div>
+
+  <% if deal.entered_stage_at.present? %>
+    <p class="text-xs text-gray-500 italic">
+      <%= time_ago_in_words(deal.entered_stage_at) %> in stage
+    </p>
+  <% end %>
+
+  <%# Optional: Show when the deal was created %>
+  <%# 
+  <p class="text-xs text-gray-400">
+    Created <%= time_ago_in_words(deal.created_at) %>
+  </p>
+<% end %>

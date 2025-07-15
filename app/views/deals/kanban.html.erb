@@ -1,0 +1,57 @@
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-xl font-semibold">Deals Pipeline</h1>
+  <%= link_to "Customize Pipeline", stages_path, class: "text-sm text-blue-600 underline" %>
+</div>
+<h1 class="text-xl font-semibold mb-4">Deals Pipeline</h1>
+
+<div class="flex space-x-4 overflow-x-auto">
+  <% @stages.each do |stage| %>
+    <div class="w-64 bg-gray-100 rounded shadow p-3" data-stage-id="<%= stage.id %>">
+      <h2 class="text-md font-bold mb-2"><%= stage.name %></h2>
+
+      <div id="stage-<%= stage.id %>"
+           class="space-y-2 min-h-[100px] dropzone"
+           data-stage-id="<%= stage.id %>"
+           ondragover="event.preventDefault()"
+           ondrop="handleDrop(event, <%= stage.id %>)">
+           
+        <%= render partial: "deal_card", collection: @deals.where(stage_id: stage.id), as: :deal %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // ✅ Make each deal card draggable
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".deal-card").forEach(card => {
+      card.setAttribute("draggable", true);
+      card.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", card.dataset.dealId);
+      });
+    });
+  });
+
+  // ✅ Handle drop event with numeric stage ID
+  function handleDrop(event, newStageId) {
+    event.preventDefault();
+    const dealId = event.dataTransfer.getData("text/plain");
+    const card = document.querySelector(`[data-deal-id='${dealId}']`);
+    const targetColumn = event.currentTarget;
+
+    if (card && targetColumn) {
+      targetColumn.appendChild(card);
+
+      fetch(`/deals/${dealId}/update_stage`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+        },
+        body: JSON.stringify({ stage_id: newStageId })
+      });
+    }
+  }
+</script>
+
+<%= turbo_stream_from "deals" %>

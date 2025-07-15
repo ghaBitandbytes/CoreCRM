@@ -1,0 +1,37 @@
+<h2 class="text-2xl font-bold mb-4">
+  <% if @company %>
+    Deals for <%= @company.name %>
+  <% else %>
+    My Deals
+  <% end %>
+</h2>
+
+<div class="mb-6">
+  <% if @company %>
+    <%= link_to "➕ New Deal", new_company_deal_path(@company), class: "inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition" %>
+    <%= link_to "📁 My Deals", deals_path, class: "inline-block ml-4 bg-green-600 text-black px-4 py-2 rounded hover:bg-green-700 transition" %>
+  <% else %>
+    <%= link_to "➕ New Deal", new_deal_path, class: "inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition" %>
+    <%= link_to "🏠 Company Deals", companies_path, class: "inline-block ml-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition" %>
+  <% end %>
+</div>
+
+<ul class="space-y-2">
+  <% @deals.each do |deal| %>
+    <li class="p-3 bg-white border rounded shadow-sm">
+      <div class="flex justify-between items-center">
+        <div>
+          <%= link_to deal.title, deal_path(deal), class: "text-blue-700 font-semibold hover:underline" %>
+          <p class="text-sm text-gray-500">Stage: <%= deal.stage&.name || deal.stage_label %></p>
+          <p class="text-sm text-gray-400">Company: <%= deal.company&.name %></p>
+          <p class="text-sm text-gray-400">Value: <%= number_to_currency(deal.value) %></p>
+        </div>
+
+        <div class="space-x-2">
+          <%= link_to "Show", deal_path(deal), class: "inline-block text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300" %>
+          <%= link_to "Edit", edit_deal_path(deal), class: "inline-block text-sm bg-yellow-400 px-3 py-1 rounded hover:bg-yellow-500 text-black" %>
+        </div>
+      </div>
+    </li>
+  <% end %>
+</ul>

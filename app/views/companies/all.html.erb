@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Directory</title>
+  <style>
+    :root {
+      --primary-color: #3a4e7a; /* Deep navy blue */
+      --primary-hover: #2c3e5f; /* Darker navy */
+      --secondary-color: #6c757d; /* Cool gray */
+      --accent-color: #4e8cff; /* Vibrant blue */
+      --success-color: #28a745; /* Fresh green */
+      --warning-color: #ffc107; /* Golden yellow */
+      --danger-color: #dc3545; /* Alert red */
+      --text-color: #212529; /* Dark gray for text */
+      --text-light: #6c757d; /* Lighter gray */
+      --light-bg: #f8f9fa; /* Off-white background */
+      --border-color: #dee2e6; /* Very light gray */
+      --white: #ffffff;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --rounded: 8px;
+      --transition: all 0.25s ease;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 2rem;
+      background-color: var(--light-bg);
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e5e5e5' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin: 0;
+      position: relative;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--rounded);
+      font-weight: 500;
+      transition: var(--transition);
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-size: 0.95rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(78, 140, 255, 0.2);
+    }
+    
+    .btn-primary:hover {
+      background-color: #3a7bff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(78, 140, 255, 0.3);
+    }
+    
+    .companies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .company-card {
+      background-color: var(--white);
+      border-radius: var(--rounded);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .company-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .company-card-header {
+      background-color: var(--primary-color);
+      color: var(--white);
+      padding: 1.2rem;
+    }
+    
+    .company-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    .company-name::before {
+      content: "🏢";
+      font-size: 1.2rem;
+    }
+    
+    .company-card-body {
+      padding: 1.5rem;
+    }
+    
+    .company-detail {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .company-detail strong {
+      color: var(--primary-color);
+      min-width: 80px;
+      display: inline-block;
+    }
+    
+    .company-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .action-link {
+      color: var(--white);
+      padding: 0.5rem 1rem;
+      border-radius: var(--rounded);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .view-link {
+      background-color: var(--success-color);
+    }
+    
+    .edit-link {
+      background-color: var(--warning-color);
+    }
+    
+    .delete-link {
+      background-color: var(--danger-color);
+    }
+    
+    .action-link:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background-color: var(--white);
+      border-radius: var(--rounded);
+      box-shadow: var(--card-shadow);
+      color: var(--text-light);
+    }
+    
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      opacity: 0.7;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .companies-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Company Directory</h1>
+      <p class="company-subtitle">All registered companies in our system</p>
+    </div>
+  </div>
+
+  <% if @companies.any? %>
+    <div class="companies-grid">
+      <% @companies.each do |company| %>
+        <div class="company-card">
+          <div class="company-card-header">
+            <h3 class="company-name"><%= company.name %></h3>
+          </div>
+          <div class="company-card-body">
+            <div class="company-detail">
+              <strong>Email:</strong>
+              <span><%= company.email || "Not specified" %></span>
+            </div>
+            <div class="company-detail">
+              <strong>Phone:</strong>
+              <span><%= company.phone || "Not specified" %></span>
+            </div>
+            <div class="company-detail">
+              <strong>Website:</strong>
+              <span>
+                <% if company.website %>
+                  <a href="<%= company.website %>" target="_blank" style="color: var(--accent-color); text-decoration: none;">
+                    <%= company.website.truncate(30) %>
+                  </a>
+                <% else %>
+                  Not specified
+                <% end %>
+              </span>
+            </div>
+            <div class="company-detail">
+              <strong>Industry:</strong>
+              <span><%= company.industry || "Not specified" %></span>
+            </div>
+            <div class="company-detail">
+              <strong>Address:</strong>
+              <span><%= company.address || "Not specified" %></span>
+            </div>
+            
+            <div class="company-actions">
+              <%= link_to company_path(company), class: "action-link view-link" do %>
+                <span></span> View
+              <% end %>
+              <%= link_to edit_company_path(company), class: "action-link edit-link" do %>
+                <span></span> Edit
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state-icon">🏢</div>
+      <h3>No Companies Found</h3>
+      <p>There are no companies registered in the system yet.</p>
+    </div>
+  <% end %>
+</body>
+</html>

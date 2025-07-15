@@ -1,0 +1,32 @@
+<div class="bg-white rounded-xl shadow hover:shadow-lg transition p-5 border border-gray-200">
+  <h2 class="text-lg font-bold text-gray-800 mb-1"><%= lead.name %></h2>
+
+  <p class="text-sm text-gray-500"><strong>Status:</strong> <span class="capitalize"><%= lead.status %></span></p>
+  <p class="text-sm text-gray-500"><strong>Email:</strong> <%= lead.email %></p>
+  <p class="text-sm text-gray-500"><strong>Phone:</strong> <%= lead.phone %></p>
+
+  <% if lead.company.present? %>
+    <p class="text-sm text-gray-500"><strong>Company:</strong> <%= lead.company %></p>
+  <% end %>
+
+  <% if lead.notes.present? %>
+    <p class="text-sm text-gray-500"><strong>Notes:</strong> <%= truncate(lead.notes, length: 100) %></p>
+  <% end %>
+
+  <% if lead.assigned_to.present? %>
+    <p class="text-sm text-gray-500"><strong>Assigned To:</strong> <%= lead.assigned_to %></p>
+  <% end %>
+
+  <p class="text-xs text-gray-400 mt-2">
+    <strong>Created:</strong> <%= lead.created_at.strftime("%b %d, %Y %l:%M %p") %><br>
+    <strong>Updated:</strong> <%= lead.updated_at.strftime("%b %d, %Y %l:%M %p") %>
+  </p>
+
+  <div class="mt-4 flex justify-between">
+    <div class="space-x-2">
+      <%= link_to "Show", lead_path(lead), class: "text-blue-600 hover:underline text-sm" %>
+      <%= link_to "Edit", edit_lead_path(lead), class: "text-yellow-500 hover:underline text-sm" %>
+      <%= link_to "Delete", lead_path(lead), method: :delete, data: { turbo_method: :delete, confirm: "Are you sure?" }, class: "text-red-500 hover:underline text-sm" %>
+    </div>
+  </div>
+</div>

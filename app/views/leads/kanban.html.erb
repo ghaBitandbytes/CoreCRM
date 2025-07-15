@@ -1,0 +1,362 @@
+<!-- app/views/leads/kanban.html.erb -->
+<div class="kanban-container min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header with animated title -->
+    <div class="flex justify-between items-center mb-8 animate-fade-in-down">
+      <div>
+        <h2 class="text-3xl font-extrabold text-gray-800 flex items-center">
+          <span class="mr-3 animate-bounce">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+            </svg>
+          </span>
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+            Lead Management Kanban Board
+          </span>
+        </h2>
+        <p class="text-gray-500 mt-1 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          Drag and drop leads between columns (coming soon)
+        </p>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <%= current_user.name %>
+        </span>
+        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+          <%= current_user.role.capitalize %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Kanban Board Columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <% statuses = ['New', 'Contacted', 'Converted', 'Lost'] %>
+      <% statuses << 'Qualified' if current_user.role == 'salesmanager' %>
+
+      <% statuses.each do |status| %>
+        <div class="kanban-column group" data-status="<%= status.downcase %>">
+          <!-- Column Header with Status Count -->
+          <div class="flex justify-between items-center mb-4 px-4 py-3 rounded-lg border-b-4 
+              <%= status_color_border(status) %> bg-white shadow-sm hover:shadow-md transition-all duration-300">
+            <h3 class="font-semibold text-gray-700 flex items-center">
+              <span class="mr-2 <%= status_icon(status) %>"></span>
+              <%= status %>
+            </h3>
+            <span class="px-2 py-1 text-xs font-bold rounded-full 
+                <%= status_color_bg(status) %> text-white">
+              <%= @leads.where(status: status).count %>
+            </span>
+          </div>
+
+          <!-- Leads Cards -->
+          <div class="kanban-cards space-y-4 min-h-[100px] transition-all duration-500">
+            <% @leads.where(status: status).each do |lead| %>
+              <div class="kanban-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg 
+                  hover:border-indigo-300 transform hover:-translate-y-1 transition-all duration-300 relative 
+                  overflow-hidden" data-lead-id="<%= lead.id %>">
+                <!-- Card Ribbon for important statuses -->
+                <% if ['Converted', 'Lost'].include?(status) %>
+                  <div class="absolute top-0 right-0 w-24 h-6 flex items-center justify-center 
+                      <%= status == 'Converted' ? 'bg-green-500' : 'bg-red-500' %> 
+                      text-white text-xs font-bold transform rotate-45 translate-x-6 -translate-y-2">
+                    <%= status %>
+                  </div>
+                <% end %>
+
+                <div class="p-4">
+                  <!-- Lead Header with Avatar -->
+                  <div class="flex items-start justify-between mb-2">
+                    <div class="flex items-center">
+                      <div class="relative">
+                        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center 
+                            text-indigo-600 font-bold overflow-hidden">
+                          <% if lead.name.present? %>
+                            <%= lead.name.split.map { |n| n[0] }.join.upcase %>
+                          <% else %>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          <% end %>
+                        </div>
+                        <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full 
+                            <%= lead_status_dot(lead.status) %> border-2 border-white"></span>
+                      </div>
+                      <div class="ml-3">
+                        <h4 class="font-semibold text-gray-800"><%= lead.name %></h4>
+                        <p class="text-xs text-gray-500 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          <%= lead.email %>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex space-x-1">
+                      <button class="text-gray-400 hover:text-indigo-600 transition-colors duration-200" 
+                          data-bs-toggle="modal" data-bs-target="#editNoteModal-<%= lead.id %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Notes Section -->
+                  <div class="mt-3">
+                    <div class="flex items-center text-xs text-gray-500 mb-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span>Internal Notes</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-sm text-gray-700 min-h-[60px] 
+                        transition-all duration-200 hover:bg-gray-100">
+                      <% if lead.notes.present? %>
+                        <%= truncate(lead.notes, length: 120) %>
+                      <% else %>
+                        <span class="text-gray-400 italic">No notes yet</span>
+                      <% end %>
+                    </div>
+                  </div>
+
+                  <!-- Timeline and Actions -->
+                  <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    <div class="text-xs text-gray-500">
+                      <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <%= time_ago_in_words(lead.created_at) %> ago
+                      </span>
+                    </div>
+                    <button class="text-xs font-medium px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 
+                        hover:bg-indigo-100 transition-colors duration-200 flex items-center" 
+                        data-bs-toggle="modal" data-bs-target="#editNoteModal-<%= lead.id %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Edit Note
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal for editing note (same as original but styled better) -->
+              <div class="modal fade" id="editNoteModal-<%= lead.id %>" tabindex="-1" 
+                  aria-labelledby="editNoteModalLabel-<%= lead.id %>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content border-0 shadow-lg">
+                    <%= form_with(model: lead, url: lead_path(lead), method: :patch, local: true) do |f| %>
+                      <div class="modal-header bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-t-lg">
+                        <h5 class="modal-title font-bold flex items-center" id="editNoteModalLabel-<%= lead.id %>">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Edit Notes for <%= lead.name %>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body p-6">
+                        <div class="mb-4">
+                          <%= f.label :notes, "Internal Notes", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                          <%= f.text_area :notes, rows: 5, class: "form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500", placeholder: "Enter detailed notes about this lead..." %>
+                        </div>
+                      </div>
+                      <div class="modal-footer bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end">
+                        <button type="button" class="btn btn-outline-secondary mr-3" data-bs-dismiss="modal">
+                          Cancel
+                        </button>
+                        <%= f.submit "Save Notes", class: "btn btn-primary bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 border-0 shadow-md" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Empty State -->
+            <% if @leads.where(status: status).empty? %>
+              <div class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+                <h4 class="mt-2 text-sm font-medium text-gray-600">No <%= status %> leads</h4>
+                <p class="mt-1 text-xs text-gray-500">Drag leads here or create new ones</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Add this CSS to your application.css or a separate CSS file -->
+<style>
+  /* Animations */
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  .animate-fade-in-down {
+    animation: fadeInDown 0.6s ease-out forwards;
+  }
+  
+  .animate-bounce {
+    animation: bounce 2s infinite;
+  }
+  
+  /* Kanban Card Drag Preview */
+  .kanban-card {
+    cursor: grab;
+    user-select: none;
+  }
+  
+  .kanban-card:active {
+    cursor: grabbing;
+  }
+  
+  .kanban-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Kanban Column Drop Zone */
+  .kanban-column.highlight {
+    background-color: rgba(199, 210, 254, 0.3);
+    border: 2px dashed #818cf8;
+    border-radius: 0.5rem;
+  }
+  
+  /* Smooth transitions for cards */
+  .kanban-cards {
+    transition: all 0.3s ease;
+  }
+  
+  /* Custom scrollbar for columns */
+  .kanban-cards {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  
+  .kanban-cards::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .kanban-cards::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .kanban-cards::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 10px;
+  }
+  
+  .kanban-cards::-webkit-scrollbar-thumb:hover {
+    background: #a5b4fc;
+  }
+  
+  /* Gradient border for modal */
+  .modal-content {
+    position: relative;
+  }
+  
+  .modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #4f46e5, #7c3aed);
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
+</style>
+
+<!-- Add this JavaScript for enhanced interactivity -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.kanban-card');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.classList.add('shadow-lg');
+        card.classList.add('border-indigo-300');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('shadow-lg');
+        card.classList.remove('border-indigo-300');
+      });
+    });
+    
+    // Simple drag and drop setup (would need more implementation for full functionality)
+    // This is just for visual feedback - you'd need to implement the actual drag/drop logic
+    cards.forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        card.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', card.dataset.leadId);
+      });
+      
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+      });
+    });
+    
+    const columns = document.querySelectorAll('.kanban-column');
+    columns.forEach(column => {
+      column.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        column.classList.add('highlight');
+      });
+      
+      column.addEventListener('dragleave', () => {
+        column.classList.remove('highlight');
+      });
+      
+      column.addEventListener('drop', (e) => {
+        e.preventDefault();
+        column.classList.remove('highlight');
+        const leadId = e.dataTransfer.getData('text/plain');
+        const card = document.querySelector(`[data-lead-id="${leadId}"]`);
+        const cardsContainer = column.querySelector('.kanban-cards');
+        
+        // In a real implementation, you would make an AJAX call here to update the status
+        // and then move the card in the DOM
+        console.log(`Dropped lead ${leadId} in ${column.dataset.status} column`);
+      });
+    });
+  });
+</script>

@@ -1,0 +1,8 @@
+<h1>Hello <%= @user.email %>,</h1>
+<p>Here are your upcoming reminders:</p>
+
+<ul>
+  <% @reminders.each do |reminder| %>
+    <li><%= reminder.title %> — <%= reminder.remind_at.strftime("%I:%M %p, %b %d") %></li>
+  <% end %>
+</ul>

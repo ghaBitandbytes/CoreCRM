@@ -1,0 +1,20 @@
+<h1 class="text-2xl font-bold mb-4">Task: <%= @task.title %></h1>
+
+<p><strong>Due Date:</strong> <%= @task.due_date %></p>
+<p><strong>Status:</strong> <%= @task.status %></p>
+
+<h2 class="text-xl font-semibold mb-2">Comments</h2>
+
+<%= render partial: "comments/form", locals: { commentable: @task } %>
+<%= render partial: "comments/list", locals: { commentable: @task, local_user: current_user } %>
+
+<h3 class="text-lg font-bold mt-4">Activity Log</h3>
+<ul>
+  <% PublicActivity::Activity.where(trackable: @task).order(created_at: :desc).each do |activity| %>
+    <li>
+      <strong><%= activity.owner&.email || 'System' %></strong>
+      <%= activity.key.split('.').last.humanize %> this task
+      <small class="text-gray-500">(<%= time_ago_in_words(activity.created_at) %> ago)</small>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  value: 9.99
+  probability: 1
+  close_date: 2025-07-08
+  stage: MyString
+  user: one
+  company: one
+  contact: one
+
+two:
+  title: MyString
+  value: 9.99
+  probability: 1
+  close_date: 2025-07-08
+  stage: MyString
+  user: two
+  company: two
+  contact: two

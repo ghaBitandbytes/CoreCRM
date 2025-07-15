@@ -1,0 +1,149 @@
+<%= form_with model: [@company, @contact], local: true, class: "contact-form" do |f| %>
+  <div class="form-header">
+    <h2><%= @contact.new_record? ? "Create New Contact" : "Edit Contact" %></h2>
+    <p>for <%= @company.name %></p>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :name, class: "form-label" %>
+    <%= f.text_field :name, class: "form-input", placeholder: "Enter full name" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :email, class: "form-label" %>
+    <%= f.email_field :email, class: "form-input", placeholder: "Enter email address" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :phone, class: "form-label" %>
+    <%= f.telephone_field :phone, class: "form-input", placeholder: "Enter phone number" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :title, class: "form-label" %>
+    <%= f.text_field :title, class: "form-input", placeholder: "Enter job title" %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit @contact.new_record? ? "Create Contact" : "Update Contact", class: "btn-submit" %>
+    <%= link_to "Cancel", company_path(@company), class: "btn-cancel" %>
+  </div>
+<% end %>
+
+<style>
+  .contact-form {
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .form-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+  }
+
+  .form-header h2 {
+    font-size: 1.75rem;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .form-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.95rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #95a5a6;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #ecf0f1;
+  }
+
+  .btn-submit {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .btn-submit:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  .btn-cancel {
+    background-color: transparent;
+    color: #7f8c8d;
+    border: 1px solid #dee2e6;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .btn-cancel:hover {
+    background-color: #f8f9fa;
+    border-color: #95a5a6;
+  }
+
+  @media (max-width: 768px) {
+    .contact-form {
+      padding: 1.5rem;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .btn-submit,
+    .btn-cancel {
+      width: 100%;
+    }
+  }
+</style>

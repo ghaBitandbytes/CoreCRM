@@ -1,0 +1,4 @@
+<%= turbo_stream.remove dom_id(@deal) %>
+<%= turbo_stream.append "stage-#{@deal.stage}" do %>
+  <%= render partial: "deal_card", object: @deal %>
+<% end %>

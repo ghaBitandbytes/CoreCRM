@@ -1,0 +1,15 @@
+<h2 class="text-xl font-bold mb-4">Add New Stage</h2>
+
+<%= form_with model: @stage, local: true do |form| %>
+  <div class="mb-4">
+    <%= form.label :name, class: "block font-medium" %>
+    <%= form.text_field :name, class: "border p-2 rounded w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :position, class: "block font-medium" %>
+    <%= form.number_field :position, value: Stage.maximum(:position).to_i + 1, class: "border p-2 rounded w-full" %>
+  </div>
+
+  <%= form.submit "Create Stage", class: "bg-green-600 text-black px-4 py-2 rounded" %>
+<% end %>

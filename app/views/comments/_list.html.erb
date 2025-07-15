@@ -1,0 +1,4 @@
+<%= render partial: "comments/comment",
+           collection: commentable.comments.order(created_at: :desc),
+           as: :comment,
+           locals: { local_user: local_user } %>

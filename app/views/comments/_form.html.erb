@@ -1,0 +1,7 @@
+<%= form_with model: [commentable, Comment.new], local: true do |form| %>
+  <div class="mb-2">
+    <%= form.label :body, "Add a comment" %>
+    <%= form.text_area :body, rows: 3, class: "w-full border rounded p-2" %>
+  </div>
+  <%= form.submit "Post Comment", class: "bg-blue-600 text-white px-4 py-1 rounded" %>
+<% end %>

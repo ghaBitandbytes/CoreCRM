@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= @company.name %> | Company Details</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50; /* Deep navy blue */
+      --primary-light: #3a516f; /* Lighter navy */
+      --secondary-color: #7f8c8d; /* Cool gray */
+      --accent-color: #3498db; /* Vibrant blue */
+      --success-color: #2ecc71; /* Fresh green */
+      --warning-color: #f39c12; /* Golden yellow */
+      --danger-color: #e74c3c; /* Alert red */
+      --text-color: #333333; /* Dark gray for text */
+      --text-light: #95a5a6; /* Lighter gray */
+      --light-bg: #f8f9fa; /* Off-white background */
+      --border-color: #ecf0f1; /* Very light gray */
+      --white: #ffffff;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --rounded: 6px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 2rem;
+      background-color: #f5f8fa;
+      background-image: linear-gradient(to bottom, rgba(245,248,250,0.9) 0%, rgba(245,248,250,1) 100%);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .company-header {
+      background-color: var(--white);
+      padding: 2.5rem;
+      border-radius: var(--rounded);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+      position: relative;
+      border-top: 4px solid var(--accent-color);
+    }
+    
+    .company-header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .company-header h1::before {
+      content: "🏢";
+      font-size: 1.8rem;
+      color: var(--accent-color);
+    }
+    
+    .company-industry {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .company-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .detail-card {
+      background-color: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--rounded);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 3px solid var(--accent-color);
+      transition: var(--transition);
+    }
+    
+    .detail-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+    
+    .detail-card strong {
+      display: block;
+      color: var(--primary-color);
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    
+    .detail-card p {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    
+    .detail-card a {
+      color: var(--accent-color);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .detail-card a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+    
+    .contacts-section {
+      background-color: var(--white);
+      padding: 2.5rem;
+      border-radius: var(--rounded);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .section-header h2::before {
+      content: "📇";
+      font-size: 1.5rem;
+      color: var(--accent-color);
+    }
+    
+    .contacts-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    
+    .contact-item {
+      background-color: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--rounded);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 3px solid var(--success-color);
+      transition: var(--transition);
+    }
+    
+    .contact-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+    
+    .contact-item strong {
+      color: var(--primary-color);
+      font-size: 1.15rem;
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background-color: var(--white);
+      border-radius: var(--rounded);
+      box-shadow: var(--card-shadow);
+    }
+    
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      opacity: 0.7;
+    }
+    
+    .empty-state h3 {
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      margin-bottom: 0.5rem;
+    }
+    
+    .empty-state p {
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--rounded);
+      font-weight: 500;
+      transition: var(--transition);
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+    }
+    
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+    }
+    
+    .btn-primary:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--accent-color);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 1.25rem;
+      }
+      
+      .company-header,
+      .contacts-section {
+        padding: 1.5rem;
+      }
+      
+      .company-details,
+      .contacts-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="company-header">
+    <h1><%= @company.name %></h1>
+    <% if @company.industry %>
+      <p class="company-industry"><%= @company.industry %></p>
+    <% end %>
+    
+    <div class="company-details">
+      <div class="detail-card">
+        <strong>Email</strong>
+        <p><%= @company.email || "Not specified" %></p>
+      </div>
+      
+      <div class="detail-card">
+        <strong>Phone</strong>
+        <p><%= @company.phone || "Not specified" %></p>
+      </div>
+      
+      <div class="detail-card">
+        <strong>Website</strong>
+        <p>
+          <% if @company.website %>
+            <a href="<%= @company.website %>" target="_blank">
+              <%= @company.website %>
+            </a>
+          <% else %>
+            Not specified
+          <% end %>
+        </p>
+      </div>
+      
+      <div class="detail-card">
+        <strong>Address</strong>
+        <p><%= @company.address || "Not specified" %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="contacts-section">
+    <div class="section-header">
+      <h2>Contacts</h2>
+      <%= link_to "Add Contact", new_company_contact_path(@company), class: "btn btn-primary" %>
+    </div>
+    
+    <% if @contacts.any? %>
+      <ul class="contacts-list">
+        <% @contacts.each do |contact| %>
+          <li class="contact-item">
+            <strong><%= contact.name %></strong>
+            <div class="contact-detail">
+              <span>📧</span>
+              <span><%= contact.email %></span>
+            </div>
+            <div class="contact-detail">
+              <span>📞</span>
+              <span><%= contact.phone %></span>
+            </div>
+            <% if contact.title %>
+              <div class="contact-detail">
+                <span>💼</span>
+                <span><%= contact.title %></span>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>No contacts for this company yet</h3>
+        <p>Get started by adding your first contact</p>
+        <%= link_to "Add First Contact", new_company_contact_path(@company), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="action-buttons">
+    <%= link_to companies_path, class: "btn btn-outline" do %>
+      ← Back to All Companies
+    <% end %>
+    
+    <%= link_to "Edit Company", edit_company_path(@company), class: "btn btn-outline" %>
+  </div>
+</body>
+</html>

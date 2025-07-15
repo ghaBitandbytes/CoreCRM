@@ -1,0 +1,12 @@
+:concurrency: 5
+:queues:
+  - default
+
+:schedule:
+  reminder_email_job:
+    cron: "37 16 * * *"  # Runs every day at 11:02 AM
+    class: "ReminderEmailJob"
+    queue: default
+
+:redis:
+  url: <%= ENV["REDIS_URL"] %>
