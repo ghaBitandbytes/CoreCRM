@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_15_140910) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_18_141903) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_140910) do
     t.datetime "updated_at", null: false
     t.bigint "stage_id", null: false
     t.datetime "entered_stage_at"
+    t.datetime "won_at"
     t.index ["company_id"], name: "index_deals_on_company_id"
     t.index ["contact_id"], name: "index_deals_on_contact_id"
     t.index ["stage_id"], name: "index_deals_on_stage_id"
@@ -102,7 +103,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_140910) do
     t.string "assigned_to"
     t.date "reminder_date"
     t.datetime "reminder_at"
+    t.datetime "converted_at"
     t.index ["user_id"], name: "index_leads_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "recipient_id", null: false
+    t.string "actor_type", null: false
+    t.bigint "actor_id", null: false
+    t.string "notifiable_type", null: false
+    t.bigint "notifiable_id", null: false
+    t.string "action"
+    t.boolean "read"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_type", "actor_id"], name: "index_notifications_on_actor"
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
   end
 
   create_table "reminders", force: :cascade do |t|
@@ -162,6 +179,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_15_140910) do
   add_foreign_key "deals", "stages"
   add_foreign_key "deals", "users"
   add_foreign_key "leads", "users"
+  add_foreign_key "notifications", "users", column: "recipient_id"
   add_foreign_key "reminders", "leads"
   add_foreign_key "reminders", "users"
   add_foreign_key "tasks", "users"

@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :reminders
   has_many :deals
   has_many :comments, dependent: :destroy
+  has_many :notifications, foreign_key: :recipient_id
 
 
   # Set default role for new users

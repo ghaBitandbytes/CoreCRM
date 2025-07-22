@@ -1,0 +1,7 @@
+<%= turbo_stream.replace dom_id(@notification) do %>
+  <%= render @notification %>
+<% end %>
+
+<%= turbo_stream.replace "notification_bell" do %>
+  <%= render "layouts/notification_bell", unread_count: current_user.notifications.unread.count %>
+<% end %>

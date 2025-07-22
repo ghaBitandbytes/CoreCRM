@@ -351,45 +351,7 @@
 .status-converted { background-color: #2e86de; color: white; }
 .status-lost { background-color: #e74c3c; color: white; }
 
-  /* Enhanced dropdown styles */
-  .sidebar-menu .dropdown-toggle {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-  
-  .sidebar-menu .dropdown-arrow {
-    font-size: 0.7rem;
-    transition: transform 0.3s ease;
-  }
-  
-  .sidebar-menu .has-submenu.show .dropdown-arrow {
-    transform: rotate(180deg);
-  }
-  
-  .sidebar-menu .dropdown-menu {
-    background: rgba(0, 0, 0, 0.2);
-    border: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    position: relative;
-    float: none;
-  }
-  
-  .sidebar-menu .dropdown-item {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.65rem 1rem 0.65rem 3rem;
-  }
-  
-  .sidebar-menu .dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  
-  .sidebar-menu .dropdown-item.active {
-    background: rgba(26, 188, 156, 0.2);
-    color: white;
+ 
   }
 </style>
 </head>
@@ -421,7 +383,7 @@
             <div class="d-inline-block">
               <span class="badge bg-white text-success fs-6">
                 <i class="fas fa-chart-line me-1"></i> 
-                <span id="hotLeads">12</span> Hot Leads
+                <span id="hotLeads"><%= @hot_leads_count %></span> Hot Leads
               </span>
             </div>
           </div>
@@ -470,12 +432,26 @@
            <%= link_to export_leads_path(format: :csv), class: "btn btn-sm btn-outline-secondary me-2" do %>
   <i class="fas fa-download me-1"></i> Export
 <% end %>
+  
+  <div class="btn-group" role="group">
+    <%= link_to "All",
+        leads_path,
+        class: "btn btn-sm #{params[:status].blank? || params[:status] == 'all' ? 'btn-primary' : 'btn-outline-primary'}" %>
 
-                <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-sm btn-outline-primary active">All</button>
-                  <button type="button" class="btn btn-sm btn-outline-primary">New</button>
-                  <button type="button" class="btn btn-sm btn-outline-primary">Hot</button>
-                </div>
+    <%= link_to "New",
+        leads_path(status: 'new'),
+        class: "btn btn-sm #{params[:status] == 'new' ? 'btn-primary' : 'btn-outline-primary'}" %>
+
+    <%= link_to "Hot",
+        leads_path(status: 'hot'),
+        class: "btn btn-sm #{params[:status] == 'hot' ? 'btn-primary' : 'btn-outline-primary'}" %>
+  </div>
+</div>
+
+
+
+
+
               </div>
             </div>
             <div class="card-body p-0">

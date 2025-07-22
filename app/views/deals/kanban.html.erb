@@ -1,57 +1,431 @@
-<div class="flex justify-between items-center mb-4">
-  <h1 class="text-xl font-semibold">Deals Pipeline</h1>
-  <%= link_to "Customize Pipeline", stages_path, class: "text-sm text-blue-600 underline" %>
-</div>
-<h1 class="text-xl font-semibold mb-4">Deals Pipeline</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deals Pipeline | CRM</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#6366f1',
+              light: '#8183f4',
+              dark: '#4f46e5'
+            },
+            secondary: {
+              DEFAULT: '#8b5cf6',
+              light: '#9d7af7',
+              dark: '#7c3aed'
+            },
+            accent: '#f59e0b'
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'bounce-slow': 'bounce 2s infinite'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <style>
+    :root {
+      --color-primary: 99, 102, 241;
+      --color-secondary: 139, 92, 246;
+      --color-accent: 245, 158, 11;
+    }
 
-<div class="flex space-x-4 overflow-x-auto">
-  <% @stages.each do |stage| %>
-    <div class="w-64 bg-gray-100 rounded shadow p-3" data-stage-id="<%= stage.id %>">
-      <h2 class="text-md font-bold mb-2"><%= stage.name %></h2>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      background-blend-mode: overlay;
+      background-color: rgba(249, 250, 251, 0.9);
+    }
 
-      <div id="stage-<%= stage.id %>"
-           class="space-y-2 min-h-[100px] dropzone"
-           data-stage-id="<%= stage.id %>"
-           ondragover="event.preventDefault()"
-           ondrop="handleDrop(event, <%= stage.id %>)">
-           
-        <%= render partial: "deal_card", collection: @deals.where(stage_id: stage.id), as: :deal %>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .deal-card {
+      transition: all 0.3s ease;
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    .deal-card:hover {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .stage-column {
+      transition: all 0.3s ease;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    
+    .stage-column:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .dropzone {
+      transition: all 0.2s ease;
+      min-height: 150px;
+    }
+    
+    .dropzone.drag-over {
+      background-color: rgba(var(--color-primary), 0.05);
+      border: 2px dashed rgba(var(--color-primary), 0.5);
+      transform: scale(1.01);
+    }
+    
+    .pipeline-header {
+      background: linear-gradient(135deg, 
+        rgba(var(--color-primary), 1) 0%, 
+        rgba(var(--color-secondary), 1) 100%);
+      box-shadow: 0 10px 15px -3px rgba(var(--color-primary), 0.3);
+    }
+    
+    .stage-indicator {
+      background-color: rgb(var(--color-primary));
+      box-shadow: 0 0 0 2px rgba(var(--color-primary), 0.3);
+    }
+    
+    .probability-badge {
+      background-color: rgba(var(--color-primary), 0.1);
+      color: rgb(var(--color-primary));
+    }
+    
+    .deal-count-badge {
+      background-color: rgba(var(--color-primary), 0.1);
+      color: rgb(var(--color-primary));
+    }
+    
+    .glow {
+      box-shadow: 0 0 15px rgba(var(--color-primary), 0.2);
+    }
+    
+    .drag-ghost {
+      transform: rotate(3deg) scale(1.05);
+      opacity: 0.8;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .pipeline-scrollbar::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .pipeline-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+    
+    .pipeline-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(var(--color-primary), 0.3);
+      border-radius: 10px;
+    }
+    
+    .pipeline-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(var(--color-primary), 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="container-fluid px-4 py-8 max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="pipeline-header text-white rounded-2xl p-6 mb-8 shadow-lg transform transition-all duration-300 hover:scale-[1.005]">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold flex items-center animate-pulse-slow">
+            <i class="fas fa-funnel-dollar mr-3 text-accent animate-float"></i>
+            Deals Pipeline
+          </h1>
+          <p class="text-white/90 mt-2">
+            Visualize and manage your sales opportunities
+            <span class="bg-white/20 text-white/90 px-3 py-1 rounded-full text-xs ml-2">
+              <i class="fas fa-sync-alt mr-1 animate-spin"></i> Live Updates
+            </span>
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to stages_path, class: "btn btn-outline-light btn-sm flex items-center hover:bg-white/10 transition-all duration-300 hover:scale-105" do %>
+            <i class="fas fa-sliders-h mr-2"></i> Customize
+          <% end %>
+          <button class="btn btn-light btn-sm flex items-center text-primary hover:text-white transition-all duration-300 hover:scale-105" 
+                  data-bs-toggle="modal" data-bs-target="#newDealModal">
+            <i class="fas fa-plus mr-2"></i> New Deal
+          </button>
+        </div>
+      </div>
+      
+      <!-- Stats Bar -->
+      <div class="grid grid-cols-4 gap-4 mt-6">
+        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105 hover:glow">
+          <div class="text-xs text-white/80 uppercase tracking-wider">TOTAL VALUE</div>
+          <div class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-dollar-sign mr-2 text-accent"></i>
+            <%= number_to_currency(@total_value, precision: 0, unit: '') %>
+          </div>
+        </div>
+        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105 hover:glow">
+          <div class="text-xs text-white/80 uppercase tracking-wider">ACTIVE DEALS</div>
+          <div class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-chart-line mr-2 text-accent"></i>
+            <%= @deals.count %>
+          </div>
+        </div>
+        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105 hover:glow">
+          <div class="text-xs text-white/80 uppercase tracking-wider">WIN RATE</div>
+          <div class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-trophy mr-2 text-accent"></i>
+            72%
+          </div>
+        </div>
+        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105 hover:glow">
+          <div class="text-xs text-white/80 uppercase tracking-wider">AVG. DEAL SIZE</div>
+          <div class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-arrow-up mr-2 text-accent"></i>
+            <%= number_to_currency(@average_deal_size, precision: 0, unit: '') %>
+          </div>
+        </div>
       </div>
     </div>
-  <% end %>
-</div>
 
-<script>
-  // ✅ Make each deal card draggable
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".deal-card").forEach(card => {
-      card.setAttribute("draggable", true);
-      card.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("text/plain", card.dataset.dealId);
+    <!-- Pipeline Columns -->
+    <div class="flex space-x-5 overflow-x-auto pb-8 px-2 pipeline-scrollbar" id="pipeline-container">
+      <% @stages.each do |stage| %>
+        <div class="stage-column flex-shrink-0 w-80 bg-white rounded-xl shadow-md border border-gray-100 p-4 transition-all duration-300 hover:shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+              <span class="stage-indicator w-3 h-3 rounded-full mr-3 animate-pulse"></span>
+              <%= stage.name %>
+              <span class="ml-2 text-xs text-gray-500"><i class="fas fa-chevron-right"></i></span>
+            </h2>
+            <span class="deal-count-badge text-xs font-medium px-2.5 py-1 rounded-full transition-all duration-300 hover:bg-primary/20">
+              <i class="fas fa-layer-group mr-1"></i>
+              <%= @deals.where(stage_id: stage.id).count %> deals
+            </span>
+          </div>
+
+          <div id="stage-<%= stage.id %>"
+               class="dropzone space-y-3 py-2 px-1 rounded-lg transition-all duration-200"
+               data-stage-id="<%= stage.id %>"
+               ondragover="event.preventDefault(); this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="handleDrop(event, <%= stage.id %>); this.classList.remove('drag-over')">
+               
+            <%= render partial: "deal_card", collection: @deals.where(stage_id: stage.id), as: :deal %>
+          </div>
+          
+          <% if @deals.where(stage_id: stage.id).empty? %>
+            <div class="text-center py-6 text-gray-400">
+              <i class="fas fa-inbox text-2xl mb-2"></i>
+              <p class="text-sm">Drop deals here</p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      
+      <!-- Add New Stage Column -->
+      <div class="flex-shrink-0 w-72 bg-white/50 rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-4 flex items-center justify-center cursor-pointer hover:bg-white/70 transition-all duration-300">
+        <div class="text-center">
+          <i class="fas fa-plus-circle text-3xl text-primary mb-2"></i>
+          <p class="text-sm font-medium text-gray-600">Add New Stage</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Deal Modal -->
+  <div class="modal fade" id="newDealModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-xl overflow-hidden">
+        <div class="modal-header bg-gradient-to-r from-primary to-secondary text-white rounded-t-lg py-4">
+          <h5 class="modal-title text-2xl font-bold flex items-center">
+            <i class="fas fa-plus-circle mr-3 animate-bounce-slow"></i> Create New Deal
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-gray-50 p-6">
+          <!-- Add your deal form here -->
+          <div class="text-center py-8">
+            <div class="relative inline-block mb-6">
+              <i class="fas fa-funnel-dollar text-5xl text-primary animate-float"></i>
+              <div class="absolute -right-2 -top-2 bg-accent text-white rounded-full w-6 h-6 flex items-center justify-center text-xs animate-bounce-slow">!</div>
+            </div>
+            <h4 class="text-2xl font-semibold text-gray-700 mb-2">Deal Creation Form</h4>
+            <p class="text-gray-500 max-w-md mx-auto">This would contain your deal creation form with all necessary fields</p>
+          </div>
+        </div>
+        <div class="modal-footer bg-gray-100 rounded-b-lg px-6 py-4">
+          <button type="button" class="btn btn-outline-secondary hover:scale-105 transition-transform duration-300" data-bs-dismiss="modal">
+            <i class="fas fa-times mr-2"></i> Cancel
+          </button>
+          <button type="button" class="btn btn-primary text-white hover:scale-105 transition-transform duration-300">
+            <i class="fas fa-save mr-2"></i> Save Deal
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%= turbo_stream_from "deals" %>
+
+  <script>
+    // Enhanced drag and drop with animations
+    document.addEventListener("DOMContentLoaded", () => {
+      // Make deal cards draggable
+      document.querySelectorAll(".deal-card").forEach(card => {
+        card.setAttribute("draggable", true);
+        
+        card.addEventListener("dragstart", e => {
+          e.dataTransfer.setData("text/plain", card.dataset.dealId);
+          card.classList.add("drag-ghost");
+          setTimeout(() => card.classList.add("invisible"), 0);
+          
+          // Create a drag image
+          const dragImage = card.cloneNode(true);
+          dragImage.style.width = card.offsetWidth + 'px';
+          dragImage.style.position = 'absolute';
+          dragImage.style.top = '-9999px';
+          dragImage.style.left = '-9999px';
+          dragImage.style.zIndex = '10000';
+          dragImage.style.pointerEvents = 'none';
+          dragImage.classList.add("shadow-xl", "transform", "rotate-3", "scale-105");
+          document.body.appendChild(dragImage);
+          e.dataTransfer.setDragImage(dragImage, e.offsetX, e.offsetY);
+          
+          // Remove after a short delay
+          setTimeout(() => document.body.removeChild(dragImage), 100);
+        });
+        
+        card.addEventListener("dragend", () => {
+          document.querySelectorAll(".deal-card").forEach(c => {
+            c.classList.remove("drag-ghost", "invisible");
+          });
+        });
+      });
+
+      // Add smooth scroll to pipeline container
+      const pipeline = document.getElementById("pipeline-container");
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+
+      pipeline.addEventListener('mousedown', (e) => {
+        isDown = true;
+        pipeline.style.cursor = 'grabbing';
+        startX = e.pageX - pipeline.offsetLeft;
+        scrollLeft = pipeline.scrollLeft;
+      });
+
+      pipeline.addEventListener('mouseleave', () => {
+        isDown = false;
+        pipeline.style.cursor = 'grab';
+      });
+
+      pipeline.addEventListener('mouseup', () => {
+        isDown = false;
+        pipeline.style.cursor = 'grab';
+      });
+
+      pipeline.addEventListener('mousemove', (e) => {
+        if(!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - pipeline.offsetLeft;
+        const walk = (x - startX) * 2;
+        pipeline.scrollLeft = scrollLeft - walk;
+      });
+      
+      // Add hover effects to stage columns
+      document.querySelectorAll(".stage-column").forEach(column => {
+        column.addEventListener("mouseenter", () => {
+          column.querySelector(".stage-indicator").classList.add("animate-pulse");
+        });
+        
+        column.addEventListener("mouseleave", () => {
+          column.querySelector(".stage-indicator").classList.remove("animate-pulse");
+        });
       });
     });
-  });
 
-  // ✅ Handle drop event with numeric stage ID
-  function handleDrop(event, newStageId) {
-    event.preventDefault();
-    const dealId = event.dataTransfer.getData("text/plain");
-    const card = document.querySelector(`[data-deal-id='${dealId}']`);
-    const targetColumn = event.currentTarget;
+    function handleDrop(event, newStageId) {
+      event.preventDefault();
+      const dealId = event.dataTransfer.getData("text/plain");
+      const card = document.querySelector(`[data-deal-id='${dealId}']`);
+      const targetColumn = event.currentTarget;
 
-    if (card && targetColumn) {
-      targetColumn.appendChild(card);
-
-      fetch(`/deals/${dealId}/update_stage`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
-        },
-        body: JSON.stringify({ stage_id: newStageId })
-      });
+      if (card && targetColumn) {
+        // Add animation class before moving
+        card.classList.add("transform", "scale-95", "opacity-0");
+        
+        setTimeout(() => {
+          // Move the card visually
+          targetColumn.appendChild(card);
+          
+          // Animate the card back in
+          card.classList.remove("transform", "scale-95", "opacity-0");
+          card.classList.add("animate__animated", "animate__fadeInUp");
+          
+          // Remove animation class after it completes
+          setTimeout(() => {
+            card.classList.remove("animate__animated", "animate__fadeInUp");
+          }, 500);
+        }, 150);
+        
+        // Send AJAX request to update stage
+        fetch(`/deals/${dealId}/update_stage`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+          },
+          body: JSON.stringify({ stage_id: newStageId })
+        }).then(response => {
+          if (!response.ok) {
+            // If the request fails, animate the card back to its original position
+            const originalColumn = document.querySelector(`[data-stage-id='${card.dataset.stageId}']`);
+            if (originalColumn) {
+              card.classList.add("transform", "scale-95", "opacity-0");
+              setTimeout(() => {
+                originalColumn.appendChild(card);
+                card.classList.remove("transform", "scale-95", "opacity-0");
+                card.classList.add("animate__animated", "animate__shakeX");
+                setTimeout(() => {
+                  card.classList.remove("animate__animated", "animate__shakeX");
+                }, 500);
+              }, 150);
+            }
+          }
+        });
+      }
     }
-  }
-</script>
-
-<%= turbo_stream_from "deals" %>
+  </script>
+</body>
+</html>

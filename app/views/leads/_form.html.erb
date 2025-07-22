@@ -160,15 +160,21 @@
     --light-color: #ecf0f1;
   }
 
+  /* Prevent full page scrolling */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
   /* Background styling */
   .lead-form-wrapper {
-    min-height: 100vh;
+    height: 100vh;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     position: relative;
   }
-  
+
   .lead-form-overlay {
     position: absolute;
     top: 0;
@@ -178,34 +184,43 @@
     background: rgba(44, 62, 80, 0.85);
     z-index: 0;
   }
-  
+
   .lead-form-wrapper > .container {
     position: relative;
     z-index: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  
-  /* Card styling */
+
+  /* Card styling - scrollable when needed */
+  .card {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
   .bg-gradient-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
   }
-  
+
   /* Form element styling */
   .floating-input, .floating-select, .floating-textarea {
     border-left: 3px solid var(--accent-color);
     transition: all 0.3s;
     background-color: var(--light-color);
   }
-  
+
   .floating-input:focus, .floating-select:focus, .floating-textarea:focus {
     border-color: var(--secondary-color);
     box-shadow: 0 0 0 0.25rem rgba(26, 188, 156, 0.25);
     background-color: white;
   }
-  
+
   .form-floating label {
     color: var(--dark-color);
   }
-  
+
   /* Button styling */
   .btn-accent {
     background-color: var(--secondary-color);
@@ -213,24 +228,24 @@
     color: white;
     transition: all 0.3s;
   }
-  
+
   .btn-accent:hover {
     background-color: #16a085;
     border-color: #16a085;
     transform: translateY(-2px);
     color: white;
   }
-  
+
   .btn-outline-secondary {
     border-color: var(--primary-color);
     color: var(--primary-color);
   }
-  
+
   .btn-outline-secondary:hover {
     background-color: var(--primary-color);
     color: white;
   }
-  
+
   /* Animations */
   .form-enter .form-floating {
     opacity: 0;
@@ -244,7 +259,7 @@
       transform: translateY(0);
     }
   }
-  
+
   /* Sequential animation delay for form fields */
   .form-enter .form-floating:nth-child(1) { animation-delay: 0.1s; }
   .form-enter .form-floating:nth-child(2) { animation-delay: 0.2s; }
@@ -255,7 +270,7 @@
   .form-enter .form-floating:nth-child(7) { animation-delay: 0.7s; }
   .form-enter .form-floating:nth-child(8) { animation-delay: 0.8s; }
   .form-enter .form-floating:nth-child(9) { animation-delay: 0.9s; }
-  
+
   /* Badge styling */
   .badge.bg-white {
     background-color: white !important;

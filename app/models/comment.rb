@@ -24,27 +24,23 @@ class Comment < ApplicationRecord
                          target: dom_id(self)
   }
 
-  # Notify mentioned users
-  after_create :notify_mentioned_users
+ after_create :notify_mentioned_users
 
-  # Extracts mentioned usernames (e.g. @john)
-  def mentioned_usernames
-    body.scan(/@(\w+)/).flatten
+def mentioned_users
+  body.scan(/@(\w+)/).flatten.map do |username|
+    User.find_by(username: username)
+  end.compact.uniq
+end
+
+def notify_mentioned_users
+  mentioned_users.each do |user|
+    Notification.create!(
+      recipient: user,
+      actor: self.user,
+      notifiable: self,
+      action: "mentioned you in a comment",
+      read: false
+    )
   end
-
-  private
-
-  def notify_mentioned_users
-    mentioned_usernames.each do |username|
-      mentioned_user = User.find_by(username: username)
-      next unless mentioned_user && mentioned_user != user
-
-      Notification.create!(
-        user: mentioned_user,
-        actor: user,
-        action: "mentioned you in a comment",
-        notifiable: self
-      )
-    end
-  end
+end
 end

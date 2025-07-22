@@ -60,14 +60,7 @@
               <div class="kanban-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg 
                   hover:border-indigo-300 transform hover:-translate-y-1 transition-all duration-300 relative 
                   overflow-hidden" data-lead-id="<%= lead.id %>">
-                <!-- Card Ribbon for important statuses -->
-                <% if ['Converted', 'Lost'].include?(status) %>
-                  <div class="absolute top-0 right-0 w-24 h-6 flex items-center justify-center 
-                      <%= status == 'Converted' ? 'bg-green-500' : 'bg-red-500' %> 
-                      text-white text-xs font-bold transform rotate-45 translate-x-6 -translate-y-2">
-                    <%= status %>
-                  </div>
-                <% end %>
+      
 
                 <div class="p-4">
                   <!-- Lead Header with Avatar -->
@@ -88,23 +81,25 @@
                             <%= lead_status_dot(lead.status) %> border-2 border-white"></span>
                       </div>
                       <div class="ml-3">
-                        <h4 class="font-semibold text-gray-800"><%= lead.name %></h4>
-                        <p class="text-xs text-gray-500 flex items-center">
+<h4 class="font-semibold text-gray-800">
+  <%= truncate(lead.name, length: 15) %>
+</h4>                        <p class="text-xs text-gray-500 flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
-                          <%= lead.email %>
+                            <%= truncate(lead.email, length: 20) %>
+
                         </p>
+                    </div>
+                    </div>
+                       <div class="flex space-x-1">
+                        <button class="text-gray-400 hover:text-indigo-600 transition-colors duration-200" 
+                            onclick="toggleNoteEdit(<%= lead.id %>)" data-bs-toggle="modal" data-bs-target="#editNoteModal-<%= lead.id %>">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
                       </div>
-                    </div>
-                    <div class="flex space-x-1">
-                      <button class="text-gray-400 hover:text-indigo-600 transition-colors duration-200" 
-                          data-bs-toggle="modal" data-bs-target="#editNoteModal-<%= lead.id %>">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                    </div>
                   </div>
 
                   <!-- Notes Section -->
@@ -114,9 +109,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                       <span>Internal Notes</span>
+                     
                     </div>
                     <div class="bg-gray-50 rounded-lg p-3 text-sm text-gray-700 min-h-[60px] 
-                        transition-all duration-200 hover:bg-gray-100">
+                        transition-all duration-200 hover:bg-gray-100" id="notes-display-<%= lead.id %>">
                       <% if lead.notes.present? %>
                         <%= truncate(lead.notes, length: 120) %>
                       <% else %>
@@ -137,7 +133,7 @@
                     </div>
                     <button class="text-xs font-medium px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 
                         hover:bg-indigo-100 transition-colors duration-200 flex items-center" 
-                        data-bs-toggle="modal" data-bs-target="#editNoteModal-<%= lead.id %>">
+                       onclick="toggleNoteEdit(<%= lead.id %>)" >
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
@@ -147,37 +143,18 @@
                 </div>
               </div>
 
-              <!-- Modal for editing note (same as original but styled better) -->
-              <div class="modal fade" id="editNoteModal-<%= lead.id %>" tabindex="-1" 
-                  aria-labelledby="editNoteModalLabel-<%= lead.id %>" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content border-0 shadow-lg">
-                    <%= form_with(model: lead, url: lead_path(lead), method: :patch, local: true) do |f| %>
-                      <div class="modal-header bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-t-lg">
-                        <h5 class="modal-title font-bold flex items-center" id="editNoteModalLabel-<%= lead.id %>">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          Edit Notes for <%= lead.name %>
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body p-6">
-                        <div class="mb-4">
-                          <%= f.label :notes, "Internal Notes", class: "block text-sm font-medium text-gray-700 mb-2" %>
-                          <%= f.text_area :notes, rows: 5, class: "form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500", placeholder: "Enter detailed notes about this lead..." %>
-                        </div>
-                      </div>
-                      <div class="modal-footer bg-gray-50 px-6 py-4 rounded-b-lg flex justify-end">
-                        <button type="button" class="btn btn-outline-secondary mr-3" data-bs-dismiss="modal">
-                          Cancel
-                        </button>
-                        <%= f.submit "Save Notes", class: "btn btn-primary bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 border-0 shadow-md" %>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
+              <!-- Modal for editing note -->
+            <div id="note-<%= lead.id %>" >
+  <p id="note-text-<%= lead.id %>"></p>
+
+  <form id="note-form-<%= lead.id %>" action="<%= lead_path(lead) %>" method="post" class="hidden">
+    <input type="hidden" name="_method" value="patch">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <textarea name="lead[notes]" class="w-full border rounded p-2"><%= lead.notes %></textarea>
+    <button type="submit" class="mt-2 bg-green-500 text-white px-3 py-1 rounded">Save</button>
+  </form>
+</div>
+
             <% end %>
 
             <!-- Empty State -->
@@ -196,8 +173,6 @@
     </div>
   </div>
 </div>
-
-
 
 <!-- Add this CSS to your application.css or a separate CSS file -->
 <style>
@@ -301,8 +276,34 @@
   }
 </style>
 
-<!-- Add this JavaScript for enhanced interactivity -->
+<!-- JavaScript for handling form submission and modal closing -->
 <script>
+
+  function toggleNoteEdit(leadId) {
+    const noteText = document.getElementById(`note-text-${leadId}`);
+    const noteForm = document.getElementById(`note-form-${leadId}`);
+
+    if (noteForm.classList.contains('hidden')) {
+      noteText.style.display = 'none';
+      noteForm.classList.remove('hidden');
+    } else {
+      noteForm.classList.add('hidden');
+      noteText.style.display = 'block';
+    }
+  }
+
+  // Optional: Hide form on submit
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll("form[id^='note-form-']").forEach(form => {
+      form.addEventListener('submit', function () {
+        const leadId = this.id.replace('note-form-', '');
+        this.classList.add('hidden');
+        document.getElementById(`note-text-${leadId}`).style.display = 'block';
+      });
+    });
+  });
+
+
   document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips
     [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function (tooltipTriggerEl) {
@@ -323,7 +324,6 @@
     });
     
     // Simple drag and drop setup (would need more implementation for full functionality)
-    // This is just for visual feedback - you'd need to implement the actual drag/drop logic
     cards.forEach(card => {
       card.addEventListener('dragstart', (e) => {
         card.classList.add('dragging');
@@ -353,10 +353,49 @@
         const card = document.querySelector(`[data-lead-id="${leadId}"]`);
         const cardsContainer = column.querySelector('.kanban-cards');
         
-        // In a real implementation, you would make an AJAX call here to update the status
-        // and then move the card in the DOM
         console.log(`Dropped lead ${leadId} in ${column.dataset.status} column`);
       });
     });
   });
+
+  // Function to handle note submission
+  function handleNoteSubmit(event, leadId) {
+    event.preventDefault();
+    
+    const form = document.getElementById(`edit-note-form-${leadId}`);
+    const formData = new FormData(form);
+    const notesDisplay = document.getElementById(`notes-display-${leadId}`);
+    
+    fetch(form.action, {
+      method: 'PATCH',
+      body: formData,
+      headers: {
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+        'Accept': 'application/json'
+      },
+      credentials: 'same-origin'
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      // Close the modal
+      const modalEl = document.getElementById(`editNoteModal-${leadId}`);
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      modal.hide();
+      
+      // Update the notes display
+      if (data.notes && data.notes.trim() !== '') {
+        notesDisplay.textContent = data.notes;
+        notesDisplay.classList.remove('text-gray-400', 'italic');
+      } else {
+        notesDisplay.innerHTML = '<span class="text-gray-400 italic">No notes yet</span>';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('There was an error saving the notes. Please try again.');
+    });
+  }
 </script>

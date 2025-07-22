@@ -1,5 +1,5 @@
 class StagesController < ApplicationController
-  before_action :set_stage, only: [:edit, :update]
+  before_action :set_stage, only: [:edit, :update, :destroy]
 
   def index
     @stages = Stage.order(:position)
@@ -27,6 +27,11 @@ class StagesController < ApplicationController
     else
       render :edit
     end
+  end
+
+  def destroy
+    @stage.destroy
+    redirect_to stages_path, notice: "Stage deleted successfully"
   end
 
   private

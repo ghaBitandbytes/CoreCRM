@@ -50,13 +50,22 @@ end
   end
 
   def update_stage
-    @deal = Deal.find(params[:id])
-    if @deal.update(stage_id: params[:stage_id])
-      head :ok
-    else
-      render json: { errors: @deal.errors.full_messages }, status: :unprocessable_entity
-    end
+  @deal = Deal.find(params[:id])
+  stage = Stage.find(params[:stage_id])
+
+  # Set won_at when moved to "Won"
+  if stage.name == "Won"
+    @deal.won_at = Time.current
   end
+
+  if @deal.update(stage_id: stage.id)
+    head :ok
+  else
+    render json: { errors: @deal.errors.full_messages }, status: :unprocessable_entity
+  end
+end
+
+
 
   def destroy
     @deal.destroy

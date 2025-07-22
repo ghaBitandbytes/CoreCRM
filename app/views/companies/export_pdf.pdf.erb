@@ -1,0 +1,49 @@
+<h1>Company Report: <%= @company.name %></h1>
+<p><strong>Industry:</strong> <%= @company.industry %></p>
+<p><strong>Created At:</strong> <%= @company.created_at.strftime("%d %B %Y") %></p>
+
+<hr>
+
+<h2>Contacts</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @contacts.each do |contact| %>
+      <tr>
+        <td><%= contact.name %></td>
+        <td><%= contact.email %></td>
+        <td><%= contact.phone %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Deals</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Value</th>
+      <th>Stage</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @deals.each do |deal| %>
+      <tr>
+        <td><%= deal.title %></td>
+        <td><%= number_to_currency(deal.value) %></td>
+        <td><%= deal.stage %></td>
+        <td><%= deal.created_at.strftime("%d %B %Y") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

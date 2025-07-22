@@ -3,6 +3,7 @@ class CompaniesController < ApplicationController
   before_action :set_company, only: [:show, :edit, :update]
 
  def index
+ 
   @company = Company.order(created_at: :desc).first
 
   if @company.present?
@@ -20,6 +21,20 @@ class CompaniesController < ApplicationController
                   .limit(10)
   else
     @activities = []
+  end
+end
+
+def export_pdf
+  @company = Company.find(params[:id])
+  @contacts = @company.contacts
+  @deals = @company.deals
+
+  respond_to do |format|
+    format.pdf do
+      render pdf: "company_#{@company.id}_details",
+             template: "companies/export_pdf",
+             layout: "pdf"
+    end
   end
 end
 

@@ -63,24 +63,30 @@ module ApplicationHelper
     end
   end
 
-  def activity_description(activity)
-    case activity.key
-    when 'contact.created'
-      " created contact #{activity.trackable&.name || 'a contact'}"
-    when 'contact.updated'
-      " updated contact #{activity.trackable&.name || 'a contact'}"
-    when 'deal.created'
-      " created deal #{activity.trackable&.title || 'a deal'}"
-    when 'deal.updated'
-      " updated deal #{activity.trackable&.title || 'a deal'}"
-    when 'task.created'
-      " created task #{activity.trackable&.title || 'a task'}"
-    when 'task.updated'
-      " updated task #{activity.trackable&.title || 'a task'}"
-    when 'company.updated'
-      " updated company details"
-    else
-      " performed #{activity.key.humanize.downcase}"
-    end
+ def activity_description(activity)
+  role = activity.owner&.role || "system"
+
+  case activity.key
+  when 'contact.create', 'contact.created'
+    "#{role} created contact #{activity.trackable&.name || 'a contact'}"
+  when 'contact.update', 'contact.updated'
+    "#{role} updated contact #{activity.trackable&.name || 'a contact'}"
+  when 'deal.create', 'deal.created'
+    "#{role} created deal #{activity.trackable&.title || 'a deal'}"
+  when 'deal.update', 'deal.updated'
+    "#{role} updated deal #{activity.trackable&.title || 'a deal'}"
+  when 'task.create', 'task.created'
+    "#{role} created task #{activity.trackable&.title || 'a task'}"
+  when 'task.update', 'task.updated'
+    "#{role} updated task #{activity.trackable&.title || 'a task'}"
+  when 'company.create', 'company.created'
+    "#{role} created a company"
+  when 'company.update', 'company.updated'
+    "#{role} updated company details"
+  else
+    "#{role} performed #{activity.key.humanize.downcase}"
   end
+end
+
+
 end

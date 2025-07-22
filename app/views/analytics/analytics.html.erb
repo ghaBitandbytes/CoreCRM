@@ -1,0 +1,54 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-8">Analytics Dashboard</h1>
+
+  <div class="bg-white p-4 rounded shadow mb-6">
+  <h2 class="text-lg font-semibold mb-4">Win/Loss Ratio</h2>
+
+  <% if @win_loss_ratio.present? %>
+    <%= pie_chart @win_loss_ratio, donut: true, height: "300px", colors: ["#22c55e", "#ef4444"] %>
+  <% else %>
+    <p>No won or lost deals to display.</p>
+  <% end %>
+</div>
+
+<div class="p-4 bg-white rounded shadow mt-4">
+  <h2 class="text-lg font-semibold">Average Deal Cycle Time</h2>
+  <p class="text-2xl text-green-600 mt-2"><%= @avg_deal_cycle_time %> days</p>
+</div>
+
+
+<div class="bg-white rounded p-4 shadow mb-6">
+  <h2 class="text-lg font-semibold mb-2">Forecast Revenue (Pipeline)</h2>
+  <%= line_chart @forecast_revenue, height: "300px", library: { title: { text: "Forecast Revenue", x: -20 } } %>
+</div>
+
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-4">Top Lead Sources</h2>
+      <%= pie_chart @lead_sources, height: "300px", library: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Top Lead Sources",
+            font: { size: 16 }
+          }
+        }
+      } %>
+    </div>
+
+
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-4">Industry-wise Deal Distribution</h2>
+      <%= pie_chart @deal_distribution_by_industry, height: "300px", library: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Deals by Industry",
+            font: { size: 16 }
+          }
+        }
+      } %>
+    </div>
+  </div>
+</div>

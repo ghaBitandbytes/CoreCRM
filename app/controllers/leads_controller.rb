@@ -4,15 +4,31 @@ class LeadsController < ApplicationController
 
   def index
    @leads = accessible_leads
+   @hot_leads_count = accessible_leads.where(status: 'Qualified').count
 
-    if params[:query].present?
+     if params[:query].present?
       q = "%#{params[:query]}%"
-      @leads = @leads.where(
-        "name ILIKE :q OR source ILIKE :q OR status ILIKE :q",
-        q: q
-      )
+      @leads = @leads.where("name ILIKE :q OR source ILIKE :q OR status ILIKE :q", q: q)
+    end
+
+    if params[:status].present?
+      filter_key = params[:status].to_s.downcase.strip
+
+      filter_map = {
+        'hot' => 'Qualified',
+        'new' => 'New'
+      }
+
+      if filter_map.key?(filter_key)
+        @leads = @leads.where("LOWER(status) = ?", filter_map[filter_key].downcase)
+      elsif filter_key == 'all'
+        # nothing
+      else
+        @leads = @leads.none
+      end
     end
   end
+  
 
   def export
     @leads = accessible_leads
@@ -67,11 +83,18 @@ end
 
   def update
   @lead = Lead.find(params[:id])
+  previous_status = @lead.status
 
   if @lead.update(lead_params)
     if @lead.status == "Qualified" && current_user.role == "salesmanager"
+      @lead.update(converted_at: Time.current) unless previous_status == "Qualified"
       flash[:qualified_lead_id] = @lead.id
-      redirect_to salesmanager_dashboard_path, notice: "Lead qualified successfully."
+      redirect_to salesmanager_dashboard_path, notice: "Lead qualified and timestamped."
+    
+    # ✅ Redirect to kanban if notes were updated
+    elsif params[:lead].key?(:notes)
+      redirect_to kanban_leads_path
+    
     else
       redirect_to @lead, notice: "Lead updated successfully."
     end
@@ -79,8 +102,6 @@ end
     render :edit
   end
 end
-
-
 
 
   def destroy

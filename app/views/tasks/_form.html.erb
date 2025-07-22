@@ -1,30 +1,45 @@
-<!-- app/views/tasks/_form.html.erb -->
-<%= form_with(model: [deal, task], local: true, class: "space-y-4") do |form| %>
-  <% if task.errors.any? %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-      <strong class="font-bold">Please fix the following errors:</strong>
-      <ul class="mt-2 list-disc list-inside">
-        <% task.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
+<!-- _form.html.erb -->
+<div class="animate__animated animate__fadeIn">
+  <%= form_with(model: [deal, task], local: true, class: "space-y-6") do |form| %>
+    <% if task.errors.any? %>
+      <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 animate__animated animate__shakeX">
+        <div class="flex items-center">
+          <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+          <h3 class="font-bold"><%= pluralize(task.errors.count, "error") %> prohibited this task from being saved:</h3>
+        </div>
+        <ul class="mt-2 ml-8 list-disc text-sm space-y-1">
+          <% task.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="space-y-2">
+      <%= form.label :title, class: "block text-sm font-medium text-gray-700 flex items-center" do %>
+        <i class="fas fa-heading text-indigo-500 mr-2"></i> Task Title
+      <% end %>
+      <%= form.text_field :title, class: "form-input block w-full rounded-lg p-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500", placeholder: "Enter task title" %>
+    </div>
+
+    <div class="space-y-2">
+      <%= form.label :due_date, class: "block text-sm font-medium text-gray-700 flex items-center" do %>
+        <i class="fas fa-calendar-day text-indigo-500 mr-2"></i> Due Date
+      <% end %>
+      <%= form.date_field :due_date, class: "form-input block w-full rounded-lg p-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div class="space-y-2">
+      <%= form.label :status, class: "block text-sm font-medium text-gray-700 flex items-center" do %>
+        <i class="fas fa-tasks text-indigo-500 mr-2"></i> Status
+      <% end %>
+      <%= form.select :status, Task.statuses.keys.map { |s| [s.titleize, s] }, {}, 
+          class: "form-select block w-full rounded-lg p-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div class="pt-4">
+      <%= form.submit(task.new_record? ? "Create Task" : "Update Task", 
+            class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") %>
     </div>
   <% end %>
-
-  <div>
-    <%= form.label :title, class: "block font-semibold mb-1" %>
-    <%= form.text_field :title, class: "form-control w-full" %>
-  </div>
-
-  <div>
-    <%= form.label :due_date, class: "block font-semibold mb-1" %>
-    <%= form.date_field :due_date, class: "form-control w-full" %>
-  </div>
-
-  <div>
-    <%= form.label :status, class: "block font-semibold mb-1" %>
-    <%= form.select :status, Task.statuses.keys.map { |s| [s.humanize, s] }, {}, class: "form-control w-full" %>
-  </div>
-
-  <%= form.submit(task.new_record? ? "Create Task" : "Update Task", class: "bg-blue-600 text-white px-4 py-2 rounded") %>
-<% end %>
+</div>

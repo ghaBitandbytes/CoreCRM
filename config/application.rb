@@ -1,4 +1,3 @@
-
 require_relative 'boot'
 
 require 'rails/all'
@@ -17,8 +16,9 @@ module Corecrm
     # Load lib/ but ignore specified subfolders
     config.autoload_lib(ignore: %w[assets tasks])
 
-    # Set application time zone (adjust cron UTC offset accordingly)
-
+    # Set application time zone
+    config.time_zone = 'Asia/Karachi'
+    config.active_record.default_timezone = :utc
 
     # Optional: eager load paths for jobs/mailers/etc.
     # config.eager_load_paths << Rails.root.join("extras")

@@ -1,0 +1,15 @@
+<!-- app/views/layouts/_notification_bell.html.erb -->
+<% if defined?(current_user) && current_user.present? %>
+  <% unread_count = current_user.notifications.unread.count %>
+
+  <%= link_to notifications_path, class: "block relative" do %>
+    <button class="ripple w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary hover:bg-gray-50 transition-colors relative overflow-hidden">
+      <i class="fas fa-bell"></i>
+      <% if unread_count.positive? %>
+        <span class="absolute top-0 right-0 min-w-[0.75rem] h-4 px-1 text-[10px] bg-red-500 text-white rounded-full border-2 border-white flex items-center justify-center">
+          <%= unread_count %>
+        </span>
+      <% end %>
+    </button>
+  <% end %>
+<% end %>

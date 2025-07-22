@@ -1,36 +1,105 @@
-<h1 class="text-2xl font-bold mb-4">New Task for Deal: <%= @taskable.title %></h1>
-
-<%= link_to "⬅ Back to Deal", deal_path(@taskable), class: "text-blue-600 underline mb-4 inline-block" %>
-
-<div class="bg-white p-6 rounded shadow-md max-w-lg">
-  <%= form_with(model: [@taskable, @task], local: true, class: "space-y-4") do |form| %>
+<!-- new.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Task for <%= @taskable.title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --dark: #1e293b;
+      --light: #f8fafc;
+    }
     
-    <% if @task.errors.any? %>
-      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        <strong class="font-bold">Please fix the following errors:</strong>
-        <ul class="mt-2 list-disc list-inside">
-          <% @task.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
+    .form-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .form-input {
+      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-6">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center mb-6 animate__animated animate__fadeIn">
+      <%= link_to deal_path(@taskable), class: "text-gray-600 hover:text-gray-800 mr-4" do %>
+        <i class="fas fa-arrow-left text-xl"></i>
+      <% end %>
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+        <i class="fas fa-plus-circle text-indigo-500 mr-3"></i>
+        New Task for: <%= @taskable.title %>
+      </h1>
+    </div>
+
+    <div class="form-card rounded-xl p-8 animate__animated animate__fadeInUp">
+      <%= form_with(model: [@taskable, @task], local: true, class: "space-y-6") do |form| %>
+        <% if @task.errors.any? %>
+          <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg animate__animated animate__shakeX">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+              <h3 class="font-bold"><%= pluralize(@task.errors.count, "error") %> prohibited this task from being saved:</h3>
+            </div>
+            <ul class="mt-2 ml-8 list-disc text-sm space-y-1">
+              <% @task.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="space-y-2">
+          <%= form.label :title, class: "block text-sm font-medium text-gray-700 flex items-center" do %>
+            <i class="fas fa-heading text-indigo-500 mr-2"></i> Task Title
           <% end %>
-        </ul>
-      </div>
-    <% end %>
+          <%= form.text_field :title, class: "form-input block w-full rounded-lg p-3 shadow-sm", placeholder: "Enter task title" %>
+        </div>
 
-    <div>
-      <%= form.label :title, class: "block font-semibold" %>
-      <%= form.text_field :title, class: "form-control w-full p-2 border rounded" %>
+        <div class="space-y-2">
+          <%= form.label :due_date, class: "block text-sm font-medium text-gray-700 flex items-center" do %>
+            <i class="fas fa-calendar-day text-indigo-500 mr-2"></i> Due Date
+          <% end %>
+          <%= form.date_field :due_date, class: "form-input block w-full rounded-lg p-3 shadow-sm" %>
+        </div>
+
+        <div class="space-y-2">
+          <%= form.label :status, class: "block text-sm font-medium text-gray-700 flex items-center" do %>
+            <i class="fas fa-tasks text-indigo-500 mr-2"></i> Status
+          <% end %>
+          <%= form.select :status, Task.statuses.keys.map { |s| [s.titleize, s] }, {}, 
+              class: "form-input block w-full rounded-lg p-3 shadow-sm" %>
+        </div>
+
+        <div class="pt-4">
+          <%= form.submit "Create Task", 
+                class: "btn-primary text-white px-6 py-3 rounded-lg w-full flex items-center justify-center hover:shadow-md" %>
+        </div>
+      <% end %>
     </div>
-
-    <div>
-      <%= form.label :due_date, class: "block font-semibold" %>
-      <%= form.date_field :due_date, class: "form-control w-full p-2 border rounded" %>
-    </div>
-
-    <div>
-      <%= form.label :status, class: "block font-semibold" %>
-      <%= form.select :status, Task.statuses.keys.map { |s| [s.titleize, s] }, {}, class: "form-control w-full p-2 border rounded" %>
-    </div>
-
-    <%= form.submit "Create Task", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
-  <% end %>
-</div>
+  </div>
+</body>
+</html>

@@ -1,20 +1,134 @@
-<h1 class="text-2xl font-bold mb-4">Task: <%= @task.title %></h1>
+<!-- show.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= @task.title %> | Task Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --dark: #1e293b;
+      --light: #f8fafc;
+    }
+    
+    .task-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .activity-item {
+      position: relative;
+      padding-left: 1.5rem;
+      border-left: 2px solid #e2e8f0;
+    }
+    
+    .activity-item:before {
+      content: "";
+      position: absolute;
+      left: -0.4375rem;
+      top: 0.5rem;
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background-color: var(--primary);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center mb-6 animate__animated animate__fadeIn">
+      <%= link_to deal_path(@task.taskable), class: "text-gray-600 hover:text-gray-800 mr-4" do %>
+        <i class="fas fa-arrow-left text-xl"></i>
+      <% end %>
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+        <i class="fas fa-tasks text-indigo-500 mr-3"></i>
+        <%= @task.title %>
+      </h1>
+    </div>
 
-<p><strong>Due Date:</strong> <%= @task.due_date %></p>
-<p><strong>Status:</strong> <%= @task.status %></p>
+    <div class="task-card rounded-xl p-8 mb-8 animate__animated animate__fadeInUp">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Due Date</h3>
+          <p class="text-lg font-semibold text-gray-800 flex items-center">
+            <i class="fas fa-calendar-day text-indigo-400 mr-3"></i>
+            <%= @task.due_date %>
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Status</h3>
+          <p class="text-lg font-semibold text-gray-800 flex items-center">
+            <i class="fas <%= status_icon(@task.status) %> "></i>
+          </p>
+        </div>
+      </div>
+    </div>
 
-<h2 class="text-xl font-semibold mb-2">Comments</h2>
-
-<%= render partial: "comments/form", locals: { commentable: @task } %>
-<%= render partial: "comments/list", locals: { commentable: @task, local_user: current_user } %>
-
-<h3 class="text-lg font-bold mt-4">Activity Log</h3>
-<ul>
-  <% PublicActivity::Activity.where(trackable: @task).order(created_at: :desc).each do |activity| %>
-    <li>
-      <strong><%= activity.owner&.email || 'System' %></strong>
-      <%= activity.key.split('.').last.humanize %> this task
-      <small class="text-gray-500">(<%= time_ago_in_words(activity.created_at) %> ago)</small>
-    </li>
-  <% end %>
-</ul>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Comments Section -->
+      <div class="animate__animated animate__fadeIn">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+          <i class="fas fa-comments text-indigo-500 mr-3"></i>
+          Comments
+        </h2>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <%= render partial: "comments/form", locals: { commentable: @task } %>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <%= render partial: "comments/list", locals: { commentable: @task, local_user: current_user } %>
+        </div>
+      </div>
+      
+      <!-- Activity Log -->
+      <div class="animate__animated animate__fadeIn delay-100">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+          <i class="fas fa-history text-indigo-500 mr-3"></i>
+          Activity Log
+        </h2>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <ul class="space-y-4">
+            <% PublicActivity::Activity.where(trackable: @task).order(created_at: :desc).each do |activity| %>
+              <li class="activity-item pl-4 pb-4 last:pb-0 last:border-0">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                    <i class="fas fa-user text-indigo-500"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">
+                      <%= activity.owner&.email || 'System' %>
+                      <span class="text-gray-500 font-normal"><%= activity.key.split('.').last.humanize.downcase %> this task</span>
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      <i class="far fa-clock mr-1"></i>
+                      <%= time_ago_in_words(activity.created_at) %> ago
+                    </p>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

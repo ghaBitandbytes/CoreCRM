@@ -1,6 +1,5 @@
 // app/javascript/controllers/index.js
-
 import { application } from "./application"
-import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
+import HelloController from "./hello_controller"
 
-eagerLoadControllersFrom("controllers", application)
+application.register("hello", HelloController)

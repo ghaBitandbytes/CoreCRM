@@ -1,0 +1,20 @@
+<!-- app/views/notifications/_notification.html.erb -->
+<div class="p-4 border-b <%= 'bg-gray-50' unless notification.read %>">
+  <div class="flex items-start">
+    <div class="flex-shrink-0 mr-3">
+      <%= image_tag notification.actor.avatar_url || 'default-avatar.png', class: "w-8 h-8 rounded-full" %>
+    </div>
+    <div class="flex-1">
+      <p class="text-sm">
+        <%= link_to notification.actor.username, user_path(notification.actor), class: "font-medium text-blue-600" %>
+        <%= notification.action %>
+      </p>
+      <p class="text-xs text-gray-500 mt-1">
+        <%= time_ago_in_words(notification.created_at) %> ago
+      </p>
+      <%= button_to "Mark as read", notification_path(notification),
+                    method: :put,
+                    class: "mt-2 text-xs text-blue-600 hover:underline" %>
+    </div>
+  </div>
+</div>

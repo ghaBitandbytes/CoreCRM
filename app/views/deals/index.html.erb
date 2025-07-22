@@ -1,37 +1,170 @@
-<h2 class="text-2xl font-bold mb-4">
-  <% if @company %>
-    Deals for <%= @company.name %>
-  <% else %>
-    My Deals
-  <% end %>
-</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .deal-item {
+      transition: all 0.3s ease;
+      background: linear-gradient(to right, var(--light) 0%, white 100%);
+    }
+    
+    .deal-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: var(--secondary);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: #0d9488;
+      transform: translateY(-1px);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .delay-100 {
+      animation-delay: 0.1s;
+    }
+    
+    .delay-200 {
+      animation-delay: 0.2s;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6 animate__animated animate__fadeIn">
+      <h2 class="text-3xl font-bold mb-6 text-gray-800 flex items-center">
+        <i class="fas fa-handshake mr-3 text-indigo-500"></i>
+        <% if @company %>
+          Deals for <%= @company.name %>
+        <% else %>
+          My Deals
+        <% end %>
+      </h2>
 
-<div class="mb-6">
-  <% if @company %>
-    <%= link_to "➕ New Deal", new_company_deal_path(@company), class: "inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition" %>
-    <%= link_to "📁 My Deals", deals_path, class: "inline-block ml-4 bg-green-600 text-black px-4 py-2 rounded hover:bg-green-700 transition" %>
-  <% else %>
-    <%= link_to "➕ New Deal", new_deal_path, class: "inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition" %>
-    <%= link_to "🏠 Company Deals", companies_path, class: "inline-block ml-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition" %>
-  <% end %>
-</div>
-
-<ul class="space-y-2">
-  <% @deals.each do |deal| %>
-    <li class="p-3 bg-white border rounded shadow-sm">
-      <div class="flex justify-between items-center">
-        <div>
-          <%= link_to deal.title, deal_path(deal), class: "text-blue-700 font-semibold hover:underline" %>
-          <p class="text-sm text-gray-500">Stage: <%= deal.stage&.name || deal.stage_label %></p>
-          <p class="text-sm text-gray-400">Company: <%= deal.company&.name %></p>
-          <p class="text-sm text-gray-400">Value: <%= number_to_currency(deal.value) %></p>
-        </div>
-
-        <div class="space-x-2">
-          <%= link_to "Show", deal_path(deal), class: "inline-block text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300" %>
-          <%= link_to "Edit", edit_deal_path(deal), class: "inline-block text-sm bg-yellow-400 px-3 py-1 rounded hover:bg-yellow-500 text-black" %>
-        </div>
+      <div class="mb-8 flex flex-wrap gap-4">
+        <% if @company %>
+          <%= link_to new_company_deal_path(@company), class: "btn-primary text-white px-6 py-3 rounded-lg flex items-center animate__animated animate__fadeInUp" do %>
+            <i class="fas fa-plus-circle mr-2"></i> New Deal
+          <% end %>
+          <%= link_to deals_path, class: "btn-secondary text-white px-6 py-3 rounded-lg flex items-center animate__animated animate__fadeInUp delay-100" do %>
+            <i class="fas fa-folder-open mr-2"></i> My Deals
+          <% end %>
+        <% else %>
+          <%= link_to new_deal_path, class: "btn-primary text-white px-6 py-3 rounded-lg flex items-center animate__animated animate__fadeInUp" do %>
+            <i class="fas fa-plus-circle mr-2"></i> New Deal
+          <% end %>
+          <%= link_to companies_path, class: "bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg flex items-center animate__animated animate__fadeInUp delay-100" do %>
+            <i class="fas fa-building mr-2"></i> Company Deals
+          <% end %>
+        <% end %>
       </div>
-    </li>
-  <% end %>
-</ul>
+
+      <% if @deals.any? %>
+        <ul class="space-y-4">
+          <% @deals.each_with_index do |deal, index| %>
+            <li class="deal-item rounded-lg border border-gray-200 p-5 fade-in" style="animation-delay: <%= index * 0.05 %>s">
+              <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex-1">
+                  <%= link_to deal_path(deal), class: "text-xl font-semibold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center" do %>
+                    <i class="fas fa-file-contract mr-2 text-indigo-400"></i>
+                    <%= deal.title %>
+                  <% end %>
+                  
+                  <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+                    <div class="flex items-center text-gray-600">
+                      <i class="fas fa-layer-group mr-2 text-blue-400"></i>
+                      <span>Stage: <span class="font-medium"><%= deal.stage&.name || deal.stage_label %></span></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                      <i class="fas fa-building mr-2 text-purple-400"></i>
+                      <span>Company: <span class="font-medium"><%= deal.company&.name %></span></span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                      <i class="fas fa-dollar-sign mr-2 text-green-400"></i>
+                      <span>Value: <span class="font-medium"><%= number_to_currency(deal.value) %></span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-2">
+                  <%= link_to deal_path(deal), class: "px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition flex items-center" do %>
+                    <i class="fas fa-eye mr-2"></i> Show
+                  <% end %>
+                  <%= link_to edit_deal_path(deal), class: "px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition flex items-center" do %>
+                    <i class="fas fa-edit mr-2"></i> Edit
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="text-center py-12 animate__animated animate__fadeIn">
+          <i class="fas fa-inbox text-5xl text-gray-300 mb-4"></i>
+          <h3 class="text-xl font-medium text-gray-500">No deals found</h3>
+          <p class="text-gray-400 mt-2">Get started by creating your first deal</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <script>
+    // Add animation class to deal items when they come into view
+    document.addEventListener('DOMContentLoaded', function() {
+      const dealItems = document.querySelectorAll('.deal-item');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      dealItems.forEach(item => {
+        observer.observe(item);
+      });
+    });
+  </script>
+</body>
+</html>

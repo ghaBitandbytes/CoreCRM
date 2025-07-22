@@ -88,3 +88,8 @@ gem 'byebug'
 
 gem 'public_activity'
 
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
+gem "chartkick"
+gem "groupdate"

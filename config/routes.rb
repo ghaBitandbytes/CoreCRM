@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "notifications/index"
+  get "notifications/update"
   root "home#index"
 
   # Devise authentication
@@ -10,30 +12,36 @@ Rails.application.routes.draw do
   get 'dashboard', to: 'dashboard#index', as: :dashboard
   get 'salesmanager', to: 'salesmanager#index', as: :salesmanager_dashboard
   get "home/index"
+  get "analytics", to: "analytics#analytics"
+  get "analytics/lead_conversion", to: "analytics#lead_conversion", as: :analytics_lead_conversion
 
+  
+  
   # Sidekiq dashboard (admin only)
   require 'sidekiq/web'
   authenticate :user, lambda { |u| u.admin? } do
     mount Sidekiq::Web => '/sidekiq'
   end
 
-  resources :deals, only: [:index] # Add this line for the "My Deals" functionality
-  # Stage management
-  resources :stages, only: [:index, :edit, :update, :new, :create]
+  # Notifications
+  resources :notifications, only: [:index, :update]
 
+  # Stage management (now includes :destroy)
+  resources :stages, only: [:index, :edit, :update, :new, :create, :destroy]
+
+  # Tasks and nested comments
   resources :tasks do
     resources :comments, only: [:create, :destroy]
   end
 
-  
-# Similarly for contacts and companies
-# Similarly for contacts and companies
-
   # Companies with nested contacts, deals, and tasks
   resources :companies do
-    collection do
-      get 'all'
-    end
+  collection do
+    get 'all'
+  end
+  member do
+    get :export_pdf  # This should be inside the companies resource block
+  end
 
     resources :contacts, only: [:index, :new, :create]
     resources :deals, only: [:index, :new, :create, :show, :edit, :update, :destroy] do
@@ -67,4 +75,5 @@ Rails.application.routes.draw do
     end
     resources :reminders, only: [:create, :edit, :update, :destroy]
   end
+
 end

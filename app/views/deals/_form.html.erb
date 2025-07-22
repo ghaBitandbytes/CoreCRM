@@ -1,45 +1,159 @@
-<%= form_with(model: [@company, @deal], local: true) do |f| %>
-  <% if @deal.errors.any? %>
-    <div class="alert alert-danger">
-      <ul>
-        <% @deal.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal Form</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .form-title {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 25px;
+    }
+    .form-field {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #4a5568;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #4299e1;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+    .error-messages {
+      color: #e53e3e;
+      background-color: #fff5f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border-left: 4px solid #e53e3e;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-primary {
+      background-color: #4299e1;
+      color: white;
+      border: none;
+    }
+    .btn-secondary {
+      background-color: white;
+      color: #2d3748;
+      border: 1px solid #e2e8f0;
+    }
+    .probability-meter {
+      height: 6px;
+      background-color: #edf2f7;
+      border-radius: 3px;
+      margin-top: 5px;
+    }
+    .probability-level {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(to right, #f56565, #f6e05e, #48bb78);
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2 class="form-title">Create New Deal</h2>
+    
+    <% if @deal.errors.any? %>
+      <div class="error-messages">
+        <h3><%= pluralize(@deal.errors.count, "error") %> prohibited this deal from being saved:</h3>
+        <ul>
+          <% @deal.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-  <div class="mb-3">
-    <%= f.label :title %>
-    <%= f.text_field :title, class: "form-control" %>
+    <%= form_with(model: [@company, @deal], local: true) do |f| %>
+      <div class="form-field">
+        <%= f.label :title %>
+        <%= f.text_field :title, placeholder: "Enter deal title" %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :value %>
+        <%= f.number_field :value, step: 100, placeholder: "Enter deal value" %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :probability, "Win Probability (0-100)" %>
+        <%= f.number_field :probability, min: 0, max: 100, placeholder: "0-100" %>
+        <div class="probability-meter">
+          <div class="probability-level" style="width: <%= @deal.probability || 0 %>%"></div>
+        </div>
+        <div style="text-align: right; font-size: 14px; color: #718096;">
+          <%= @deal.probability || 0 %>% chance to win
+        </div>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :close_date %>
+        <%= f.date_field :close_date %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :stage_id, "Deal Stage" %>
+        <%= f.collection_select :stage_id, Stage.order(:position), :id, :name, { include_blank: "Select a stage..." } %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :contact_id, "Primary Contact" %>
+        <%= f.collection_select :contact_id, @company.contacts, :id, :name, { include_blank: "Select a contact..." } %>
+      </div>
+
+
+      <div class="form-actions">
+        <%= link_to "Cancel", company_deals_path(@company), class: "btn btn-secondary" %>
+        <%= f.submit "Save Deal", class: "btn btn-primary" %>
+      </div>
+    <% end %>
   </div>
 
-  <div class="mb-3">
-    <%= f.label :value %>
-    <%= f.number_field :value, step: 100, class: "form-control" %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :probability %>
-    <%= f.number_field :probability, step: 1, class: "form-control" %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :close_date %>
-    <%= f.date_field :close_date, class: "form-control" %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :stage_id, "Stage" %>
-    <%= f.collection_select :stage_id, Stage.order(:position), :id, :name, include_blank: true %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :contact_id %>
-    <%= f.collection_select :contact_id, @company.contacts, :id, :name, include_blank: true %>
-  </div>
-
-  <div class="mt-4">
-    <%= f.submit class: "btn btn-primary" %>
-  </div>
-<% end %>
+  <script>
+    // Update probability meter in real-time
+    document.getElementById('deal_probability')?.addEventListener('input', function(e) {
+      const value = Math.min(100, Math.max(0, e.target.value || 0));
+      document.querySelector('.probability-level').style.width = value + '%';
+      document.querySelector('.probability-meter + div').textContent = value + '% chance to win';
+    });
+  </script>
+</body>
+</html>

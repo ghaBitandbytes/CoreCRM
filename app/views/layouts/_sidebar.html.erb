@@ -32,13 +32,13 @@
     <h3 class="sidebar-section-title">Dashboard</h3>
     <ul>
       <li>
-        <%= link_to dashboard_path, class: "active d-flex align-items-center" do %>
+        <%= link_to dashboard_path, class: "#{current_page?(dashboard_path) ? 'active' : ''} d-flex align-items-center" do %>
           <i class="fas fa-tachometer-alt"></i>
           <span class="fw-bold">Dashboard</span>
         <% end %>
       </li>
       <li>
-       <%= link_to leads_path, class: "d-flex align-items-center px-3 py-2 text-decoration-none" do %>
+<%= link_to leads_path, class: "#{current_page?(leads_path) ? 'active' : ''} d-flex align-items-center px-3 py-2 text-decoration-none" do %>
   <i class="fas fa-users-cog text-white"></i>
   <span class="ms-2 fw-bold text-white">Leads Management</span>
 <% end %>
@@ -52,22 +52,36 @@
           <li>
         </ul>
          <li>
-        <%= link_to kanban_leads_path, class: "active d-flex align-items-center" do %>
+<%= link_to kanban_leads_path, class: "#{current_page?(kanban_leads_path) ? 'active' : ''} d-flex align-items-center" do %>
   <i class="fas fa-th-large"></i>
   <span class="fw-bold">Kanban View</span>
 <% end %>
     </ul>
   </div>
   
-  <div class="sidebar-footer">
-    <div class="user-profile">
-      <div class="user-avatar">A</div>
-      <div class="user-info">
-        <p class="user-name mb-0">Admin User</p>
-        <p class="user-role">Administrator</p>
-      </div>
+ <div class="sidebar-footer">
+  <div class="user-profile">
+    <div class="user-avatar">
+      <% if current_user.role == "salesmanager" %>
+        SM
+      <% elsif current_user.role == "sales" %>
+        S
+      <% else %>
+        <%= current_user.name.first.upcase rescue "U" %>
+      <% end %>
+    </div>
+    <div class="user-info">
+      <p class="user-name mb-0">
+        <%= current_user.role == "salesmanager" ? "Sales Manager" : current_user.role.titleize %>
+      </p>
+      <p class="user-role">
+        <%= current_user.email %>
+      </p>
     </div>
   </div>
+</div>
+
+
 </aside>
 
 <style>
@@ -197,6 +211,7 @@ body {
 }
 
 .submenu-items li a:before {
+  display: none !important;
   content: '';
   position: absolute;
   left: 1rem;

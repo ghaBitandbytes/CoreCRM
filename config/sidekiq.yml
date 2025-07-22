@@ -4,7 +4,7 @@
 
 :schedule:
   reminder_email_job:
-    cron: "37 16 * * *"  # Runs every day at 11:02 AM
+    cron: "20 16 * * *"  
     class: "ReminderEmailJob"
     queue: default
 

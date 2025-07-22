@@ -1,35 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Corecrm" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+  <title><%= content_for(:title) || "Corecrm" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", media: "all" %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-   <%= javascript_importmap_tags %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload", media: "all" %>
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
 
+  <!-- Turbo Morph for partial refreshes -->
+  <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Icons and Fonts -->
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <%= yield :head %>
-  </head>
+<%= javascript_include_tag "application", type: "module" %>
+
+  <%= yield :head %>
+</head>
 
   <body class="bg-white text-gray-800 m-0 p-0 overflow-x-hidden">
-<% unless (devise_controller? && (controller_name == "sessions" || controller_name == "registrations")) || 
-          (controller_name == "leads" && (action_name == "index" || action_name == "kanban")) || 
-          (controller_name == "dashboard") || 
-          (controller_name == "salesmanager" && action_name == "index") || 
-          (controller_name == "companies") || (controller_name == "contacts") || (controller_name == "deals") %>
-  <%= render "layouts/header" %>
-<% end %>
-
+    <% unless (devise_controller? && (controller_name == "sessions" || controller_name == "registrations")) || 
+            (controller_name == "leads") ||
+            (controller_name == "dashboard") || 
+            (controller_name == "salesmanager" && action_name == "index") || 
+            (controller_name == "companies") || (controller_name == "contacts") || (controller_name == "deals") || (controller_name == "analytics")%>
+      <%= render "layouts/header" %>
+    <% end %>
 
     <main class="w-full mx-auto">
       <% if notice %>
