@@ -1,12 +1,14 @@
-:concurrency: 5
-:queues:
+concurrency: 5
+queues:
   - default
 
-:schedule:
+schedule:
   reminder_email_job:
-    cron: "20 16 * * *"  
+    cron: "53 0 * * *"  
     class: "ReminderEmailJob"
     queue: default
+    description: "Send reminder emails daily at 8:25 PM Pakistan Time"
+    timezone: "Asia/Karachi"  # Ensures correct local time handling
 
-:redis:
+redis:
   url: <%= ENV["REDIS_URL"] %>

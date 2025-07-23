@@ -4,21 +4,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
 
-  # def create
-  #   super do |user|
-  #     if user.persisted?
-  #       Rails.logger.info "✅ Sending welcome email to #{user.email}"
-  #       UserMailer.welcome_email(user).deliver_now
-  #     end
-  #   end
-  # end
+  def create
+    super do |user|
+      if user.persisted?
+        Rails.logger.info "✅ Sending welcome email to #{user.email}"
+        UserMailer.with(user: user).welcome_email.deliver_later
+      end
+    end
+  end
 
-    def after_sign_up_path_for(resource)
+  def after_sign_up_path_for(resource)
     case resource.role
     when 'sales'
       leads_path
     when 'salesmanager'
-      salesmanager_dashboard_path  # This must match your route helper
+      salesmanager_dashboard_path
     else
       root_path
     end

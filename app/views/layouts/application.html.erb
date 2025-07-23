@@ -30,16 +30,11 @@
             (controller_name == "leads") ||
             (controller_name == "dashboard") || 
             (controller_name == "salesmanager" && action_name == "index") || 
-            (controller_name == "companies") || (controller_name == "contacts") || (controller_name == "deals") || (controller_name == "analytics")%>
+            (controller_name == "companies") || (controller_name == "contacts") || (controller_name == "deals") || (controller_name == "analytics") || (controller_name == "stages") || (controller_name == "contacts")|| (controller_name == "tasks")%>
       <%= render "layouts/header" %>
     <% end %>
 
     <main class="w-full mx-auto">
-      <% if notice %>
-        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-          <%= notice %>
-        </div>
-      <% end %>
 
       <% if alert %>
         <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">

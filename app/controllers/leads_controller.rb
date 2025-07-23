@@ -1,3 +1,4 @@
+require 'csv'
 class LeadsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_lead, only: %i[show edit update destroy]
