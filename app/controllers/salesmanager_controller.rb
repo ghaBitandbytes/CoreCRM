@@ -9,8 +9,8 @@ class SalesmanagerController < ApplicationController
   private
 
   def ensure_salesmanager!
-    unless current_user.salesmanager?
-      redirect_to root_path, alert: "Access denied. Only Sales Managers allowed."
-    end
+  unless current_user.salesmanager? || current_user.admin?
+    redirect_to root_path, alert: "Access denied. Only Sales Managers and Admins allowed."
+  end
   end
 end

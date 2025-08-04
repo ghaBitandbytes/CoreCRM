@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   # Notifications
   resources :notifications, only: [:index, :update]
 
+  resources :deals, only: [:index] # This allows /deals
+
   # Stage management (now includes :destroy)
   resources :stages, only: [:index, :edit, :update, :new, :create, :destroy]
 

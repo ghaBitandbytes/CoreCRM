@@ -93,3 +93,9 @@ gem 'wkhtmltopdf-binary'
 
 gem "chartkick"
 gem "groupdate"
+
+gem 'pundit'
+
+group :test do
+  gem 'rails-controller-testing'
+end

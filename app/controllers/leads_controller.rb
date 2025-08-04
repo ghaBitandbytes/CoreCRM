@@ -1,13 +1,14 @@
 require 'csv'
+
 class LeadsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_lead, only: %i[show edit update destroy]
 
   def index
-   @leads = accessible_leads
-   @hot_leads_count = accessible_leads.where(status: 'Qualified').count
+    @leads = policy_scope(Lead)
+    @hot_leads_count = @leads.where(status: 'Qualified').count
 
-     if params[:query].present?
+    if params[:query].present?
       q = "%#{params[:query]}%"
       @leads = @leads.where("name ILIKE :q OR source ILIKE :q OR status ILIKE :q", q: q)
     end
@@ -22,17 +23,15 @@ class LeadsController < ApplicationController
 
       if filter_map.key?(filter_key)
         @leads = @leads.where("LOWER(status) = ?", filter_map[filter_key].downcase)
-      elsif filter_key == 'all'
-        # nothing
-      else
+      elsif filter_key != 'all'
         @leads = @leads.none
       end
     end
   end
-  
 
   def export
-    @leads = accessible_leads
+    @leads = policy_scope(Lead)
+    authorize Lead
 
     respond_to do |format|
       format.csv do
@@ -43,85 +42,81 @@ class LeadsController < ApplicationController
     end
   end
 
-  def show; end
+  def show
+    authorize @lead
+  end
 
   def new
     @lead = current_user.leads.build
+    authorize @lead
   end
 
-  def kanban
-    @leads = accessible_leads
+  def create
+    @lead = current_user.leads.build(lead_params)
+    @lead.company = Company.find_by(name: params[:lead][:company])
+    authorize @lead
 
-    @new_leads        = @leads.where(status: 'New')
-  @contacted_leads  = @leads.where(status: 'Contacted')
-  @converted_leads  = @leads.where(status: 'Converted')
-  @lost_leads       = @leads.where(status: 'Lost')
-  @qualified_leads  = @leads.where(status: 'Qualified') if current_user.role == 'salesmanager'
-
-  @statuses = ['New', 'Contacted', 'Converted', 'Lost']
-  @statuses << 'Qualified' if current_user.role == 'salesmanager'
-  @leads_by_status = Lead.where(status: @statuses).group_by(&:status)
-end
-
-
-def create
-  @lead = current_user.leads.build(lead_params)
-  @lead.company = Company.find_by(name: params[:lead][:company])
-
-  if @lead.save
-    if current_user.role == "salesmanager"
-    redirect_to salesmanager_dashboard_path
+    if @lead.save
+      if current_user.role == "salesmanager"
+        redirect_to salesmanager_dashboard_path
+      else
+        redirect_to @lead
+      end
     else
-      redirect_to @lead
+      render :new
     end
-  else
-    render :new
   end
-end
 
-
-  def edit; end
+  def edit
+    authorize @lead
+  end
 
   def update
-  @lead = Lead.find(params[:id])
-  previous_status = @lead.status
+    authorize @lead
+    previous_status = @lead.status
 
-  if @lead.update(lead_params)
-    if @lead.status == "Qualified" && current_user.role == "salesmanager"
-      @lead.update(converted_at: Time.current) unless previous_status == "Qualified"
-      flash[:qualified_lead_id] = @lead.id
-      redirect_to salesmanager_dashboard_path, notice: "Lead qualified and timestamped."
-    
-    # ✅ Redirect to kanban if notes were updated
-    elsif params[:lead].key?(:notes)
-      redirect_to kanban_leads_path
-    
+    if @lead.update(lead_params)
+      if @lead.status == "Qualified" && current_user.role == "salesmanager"
+        @lead.update(converted_at: Time.current) unless previous_status == "Qualified"
+        flash[:qualified_lead_id] = @lead.id
+        redirect_to salesmanager_dashboard_path, notice: "Lead qualified and timestamped."
+
+      elsif params[:lead].key?(:notes)
+        redirect_to kanban_leads_path
+
+      else
+        redirect_to @lead, notice: "Lead updated successfully."
+      end
     else
-      redirect_to @lead, notice: "Lead updated successfully."
+      render :edit
     end
-  else
-    render :edit
   end
-end
-
 
   def destroy
+    authorize @lead
     @lead.destroy
     redirect_to leads_path, notice: "Lead deleted successfully."
   end
 
-  private
+  def kanban
+    @leads = policy_scope(Lead)
+    authorize Lead, :index?
 
-  def accessible_leads
-    if current_user.role.in?(%w[salesmanager admin])
-      Lead.all
-    else
-      current_user.leads
-    end
+    @new_leads        = @leads.where(status: 'New')
+    @contacted_leads  = @leads.where(status: 'Contacted')
+    @converted_leads  = @leads.where(status: 'Converted')
+    @lost_leads       = @leads.where(status: 'Lost')
+    @qualified_leads  = @leads.where(status: 'Qualified') if current_user.role == 'salesmanager'
+
+    @statuses = ['New', 'Contacted', 'Converted', 'Lost']
+    @statuses << 'Qualified' if current_user.role == 'salesmanager'
+    @leads_by_status = @leads.where(status: @statuses).group_by(&:status)
   end
 
+  private
+
   def set_lead
-    @lead = accessible_leads.find(params[:id])
+    @lead = policy_scope(Lead).find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to leads_path, alert: "Lead not found or you are not authorized to access it."
   end

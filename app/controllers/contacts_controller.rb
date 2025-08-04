@@ -1,32 +1,42 @@
 class ContactsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_company, only: [:index, :new, :create], if: -> { params[:company_id].present? }
   before_action :set_contact, only: [:show, :edit, :update, :destroy]
 
   def index
-    @contacts = @company ? @company.contacts : Contact.all
+    @contacts = @company ? @company.contacts : policy_scope(Contact)
+    authorize Contact
   end
 
-  def show; end
+  def show
+    authorize @contact
+  end
 
   def new
     @contact = @company.contacts.build
+    authorize @contact
   end
 
   def create
-  @contact = @company.contacts.build(contact_params)
-  if @contact.save
-    @contact.create_activity key: 'contact.created', 
-                            owner: current_user, 
-                            recipient: @company
-    redirect_to company_contacts_path(@company), notice: "Contact created successfully."
-  else
-    render :new
-  end
-end
+    @contact = @company.contacts.build(contact_params)
+    authorize @contact
 
-  def edit; end
+    if @contact.save
+      @contact.create_activity key: 'contact.created',
+                               owner: current_user,
+                               recipient: @company
+      redirect_to company_contacts_path(@company), notice: "Contact created successfully."
+    else
+      render :new
+    end
+  end
+
+  def edit
+    authorize @contact
+  end
 
   def update
+    authorize @contact
     if @contact.update(contact_params)
       redirect_to contact_path(@contact), notice: "Contact updated successfully."
     else
@@ -35,6 +45,7 @@ end
   end
 
   def destroy
+    authorize @contact
     @contact.destroy
     redirect_to companies_path, notice: "Contact deleted."
   end
