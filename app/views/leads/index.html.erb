@@ -474,12 +474,8 @@
                         <td class="ps-4 fw-bold"><%= lead.name %></td>
                         <td><%= lead.email %></td>
                         <td><%= lead.phone %></td>
-                        <td>
-                          <% status_class = "status-#{lead.status.parameterize}" %>
-<% status_label = lead.status.titleize %>
-<span class="badge <%= status_class %>"><%= status_label %></span>
+                        <td><%= lead_status_badge(lead) %></td>
 
-                        </td>
                         <td class="text-end pe-4">
                           <div class="btn-group btn-group-sm">
                             <%= link_to lead_path(lead), class: "btn btn-outline-primary" do %>

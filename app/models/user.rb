@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include Roleable
   # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
@@ -10,40 +11,19 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :notifications, foreign_key: :recipient_id
 
-
-  # Set default role for new users
+  # Callbacks
   after_initialize :set_default_role, if: :new_record?
-
-  # ✅ Send welcome email after user is created
   after_create :send_welcome_email
+
+  private
 
   def set_default_role
     self.role ||= 'viewer'
   end
 
-  def admin?
-    role == 'admin'
-  end
-
-  def sales?
-    role == 'sales'
-  end
-
-  def viewer?
-    role == 'viewer'
-  end
-
-  def salesmanager?
-  role == 'salesmanager'
-end
-
-
-  private
-
   def send_welcome_email
-  UserMailer.welcome_email(self).deliver_later
-rescue StandardError => e
-  Rails.logger.error "❌ Email delivery failed: #{e.message}"
-end
-
+    UserOnboardingService.new(self).send_welcome_email
+  rescue => e
+    Rails.logger.error "Email delivery failed: #{e.message}"
+  end
 end

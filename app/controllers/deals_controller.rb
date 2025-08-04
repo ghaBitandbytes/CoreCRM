@@ -1,4 +1,6 @@
 class DealsController < ApplicationController
+  include CompanyContext
+
   before_action :authenticate_user!
   before_action :authorize_salesmanager!
   before_action :set_company, except: [:kanban, :update_stage]
@@ -19,22 +21,17 @@ class DealsController < ApplicationController
   end
 
   def create
-  @deal = @company.deals.build(deal_params)
-  @deal.user = current_user
-  @deal.entered_stage_at ||= Time.current
+    @deal = Deals::CreateService.new(@company, current_user, params).call
 
-  if @deal.save
-    @deal.create_activity key: 'deal.created', 
-                         owner: current_user, 
-                         recipient: @company
-    redirect_to company_deals_path(@company), notice: "Deal was successfully created."
-  else
-    render :new
+    if @deal.persisted?
+      redirect_to company_deals_path(@company), notice: "Deal was successfully created."
+    else
+      render :new
+    end
   end
-end
 
   def show
-    @deal_tasks = @deal.tasks 
+    @deal_tasks = @deal.tasks
   end
 
   def edit; end
@@ -50,22 +47,15 @@ end
   end
 
   def update_stage
-  @deal = Deal.find(params[:id])
-  stage = Stage.find(params[:stage_id])
+    @deal = Deal.find(params[:id])
+    stage = Stage.find(params[:stage_id])
 
-  # Set won_at when moved to "Won"
-  if stage.name == "Won"
-    @deal.won_at = Time.current
+    if Deals::StageUpdateService.new(@deal, stage).call
+      head :ok
+    else
+      render json: { errors: @deal.errors.full_messages }, status: :unprocessable_entity
+    end
   end
-
-  if @deal.update(stage_id: stage.id)
-    head :ok
-  else
-    render json: { errors: @deal.errors.full_messages }, status: :unprocessable_entity
-  end
-end
-
-
 
   def destroy
     @deal.destroy
@@ -76,10 +66,6 @@ end
 
   def authorize_salesmanager!
     redirect_to root_path, alert: "Access denied." unless current_user.salesmanager?
-  end
-
-  def set_company
-    @company = params[:company_id] ? Company.find(params[:company_id]) : @deal&.company
   end
 
   def set_deal
@@ -93,9 +79,5 @@ end
       params[:company_id] ? company_deals_path : deals_path,
       alert: "Deal not found or you don't have access"
     )
-  end
-
-  def deal_params
-    params.require(:deal).permit(:title, :value, :probability, :close_date, :stage_id, :contact_id)
   end
 end

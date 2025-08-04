@@ -5,10 +5,9 @@ class CommentsController < ApplicationController
   before_action :authorize_user!, only: [:destroy]
 
   def create
-    @comment = @commentable.comments.build(comment_params)
-    @comment.user = current_user
+    @comment = Comments::CreateService.new(current_user, @commentable, comment_params).call
 
-    if @comment.save
+    if @comment.persisted?
       redirect_back fallback_location: root_path, notice: "Comment added."
     else
       redirect_back fallback_location: root_path, alert: "Failed to add comment."
@@ -19,7 +18,7 @@ class CommentsController < ApplicationController
     @comment.destroy
     respond_to do |format|
       format.html { redirect_back fallback_location: root_path, notice: "Comment removed." }
-      format.turbo_stream # For Turbo Stream responses
+      format.turbo_stream
     end
   end
 
@@ -46,8 +45,7 @@ class CommentsController < ApplicationController
 
   def authorize_user!
     unless @comment.user == current_user || current_user.admin?
-      redirect_back fallback_location: root_path, 
-                   alert: "You are not authorized to perform this action."
+      redirect_back fallback_location: root_path, alert: "You are not authorized to perform this action."
     end
   end
 end

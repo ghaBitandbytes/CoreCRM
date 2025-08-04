@@ -4,8 +4,8 @@ class ContactsController < ApplicationController
   before_action :set_contact, only: [:show, :edit, :update, :destroy]
 
   def index
-    @contacts = @company ? @company.contacts : policy_scope(Contact)
     authorize Contact
+    @contacts = Contacts::ListService.new(current_user, @company).call
   end
 
   def show
@@ -18,13 +18,10 @@ class ContactsController < ApplicationController
   end
 
   def create
-    @contact = @company.contacts.build(contact_params)
+    @contact = Contacts::CreateService.new(current_user, @company, contact_params).call
     authorize @contact
 
-    if @contact.save
-      @contact.create_activity key: 'contact.created',
-                               owner: current_user,
-                               recipient: @company
+    if @contact.persisted?
       redirect_to company_contacts_path(@company), notice: "Contact created successfully."
     else
       render :new

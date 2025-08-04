@@ -5,22 +5,7 @@ class CompaniesController < ApplicationController
   def index
     authorize Company
     @company = policy_scope(Company).order(created_at: :desc).first
-
-    if @company.present?
-      @activities = PublicActivity::Activity
-                    .where(
-                      "(trackable_type = 'Company' AND trackable_id = :company_id) OR " +
-                      "(trackable_type = 'Contact' AND recipient_id = :company_id AND recipient_type = 'Company') OR " +
-                      "(trackable_type = 'Deal' AND recipient_id = :company_id AND recipient_type = 'Company') OR " +
-                      "(trackable_type = 'Task' AND trackable_id IN (:task_ids))",
-                      company_id: @company.id,
-                      task_ids: @company.tasks.pluck(:id)
-                    )
-                    .order(created_at: :desc)
-                    .limit(10)
-    else
-      @activities = []
-    end
+    @activities = Companies::ActivityFetcher.new(@company).call
   end
 
   def export_pdf
@@ -55,22 +40,10 @@ class CompaniesController < ApplicationController
   end
 
   def create
-    @company = Company.new(company_params)
-    authorize @company
+    authorize Company
+    @company = Companies::CreateFromLeadService.new(params).call
 
-    lead = Lead.find_by(id: params[:lead_id])
-    @company.lead = lead if lead.present?
-
-    if @company.save
-      if lead.present?
-        Contact.create!(
-          name: lead.name,
-          email: lead.email,
-          phone: lead.phone,
-          title: "Primary Contact",
-          company: @company
-        )
-      end
+    if @company.persisted?
       redirect_to companies_path, notice: "Company and primary contact created successfully."
     else
       render :new
@@ -83,6 +56,7 @@ class CompaniesController < ApplicationController
 
   def update
     authorize @company
+
     if @company.update(company_params)
       redirect_to @company, notice: "Company updated successfully."
     else

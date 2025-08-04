@@ -10,19 +10,21 @@ class StagesController < ApplicationController
   end
 
   def create
-    @stage = Stage.new(stage_params)
-    if @stage.save
+    @stage = Stages::CreateService.new(stage_params).call
+
+    if @stage.persisted?
       redirect_to stages_path, notice: "Stage added successfully"
     else
       render :new
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
-    if @stage.update(stage_params)
+    success = Stages::UpdateService.new(@stage, stage_params).call
+
+    if success
       redirect_to stages_path, notice: "Stage updated successfully"
     else
       render :edit
