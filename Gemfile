@@ -31,7 +31,7 @@ gem "solid_cable"
 
 gem 'sidekiq'
 
-gem 'sidekiq-cron', '~> 1.2'
+gem 'sidekiq-cron', '~> 2.3'
 
 
 
